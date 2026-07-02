@@ -1,0 +1,12 @@
+@import url("../../vendor/katex.min.css");
+@import url("../skim.css");
+body { max-width: 760px; margin: 40px auto; padding: 0 20px; font: 16px/1.6 system-ui, sans-serif; background: #0d1017; color: #e8eaf0; }
+h1 { display: flex; align-items: center; gap: 10px; }
+.lede { color: #9aa3b8; font-size: 18px; }
+.step { border: 1px solid #262b38; border-radius: 12px; padding: 18px 20px; margin: 18px 0; }
+.step.done { border-color: #3f9e6e; }
+.num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #7aa2ff; color: #0d1017; font-size: 15px; margin-right: 6px; }
+.status { font-size: 14px; color: #9aa3b8; } .status.ok { color: #4ade80; }
+button.primary { font: inherit; background: #7aa2ff; border: 0; border-radius: 8px; padding: 8px 14px; color: #0d1017; font-weight: 600; cursor: pointer; }
+.hint { color: #9aa3b8; font-size: 14px; }
+#demo { border: 1px solid #262b38; border-radius: 12px; padding: 8px 20px; }

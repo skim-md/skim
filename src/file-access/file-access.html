@@ -1,0 +1,33 @@
+<!doctype html>
+<html data-skim-md="1">
+<head>
+<meta charset="utf-8">
+<title>Enable local files — Skim</title>
+<link rel="stylesheet" href="file-access.css">
+</head>
+<body>
+  <main>
+    <h1>To read local markdown files with Skim, enable access to file&nbsp;URLs — then this file reloads by itself.</h1>
+
+    <div class="card">
+      <div class="card-head"><img src="../../assets/icon48.png" width="22" height="22" alt=""> <span>Skim — Markdown Viewer &amp; Reader</span></div>
+      <div class="row ghost short"></div>
+      <div class="row ghost"></div>
+      <div class="row toggle-row">
+        <span>Allow access to file URLs</span>
+        <span class="toggle" id="toggle-pic" aria-hidden="true"><span class="knob"></span></span>
+      </div>
+      <div class="row ghost"></div>
+      <div class="row ghost short"></div>
+    </div>
+
+    <p class="status" id="status">Waiting for the switch to be flipped…</p>
+
+    <div class="actions">
+      <button id="open-settings" class="primary">Open settings</button>
+      <button id="no-thanks">No thanks</button>
+    </div>
+  </main>
+  <script src="file-access.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+@font-face {
+  font-family: "Skim Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("webfonts/source-serif-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Skim Serif";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("webfonts/source-serif-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Skim Hebrew";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("webfonts/frank-ruhl-400.woff2") format("woff2");
+  unicode-range: U+0590-05FF, U+200F, U+FB1D-FB4F;
+}
+
+@font-face {
+  font-family: "Skim Hebrew";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("webfonts/frank-ruhl-700.woff2") format("woff2");
+  unicode-range: U+0590-05FF, U+200F, U+FB1D-FB4F;
+}
+
+@font-face {
+  font-family: "Skim Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("webfonts/jetbrains-mono-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Skim Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("webfonts/jetbrains-mono-700.woff2") format("woff2");
+}

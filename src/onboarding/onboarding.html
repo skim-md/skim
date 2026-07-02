@@ -1,0 +1,29 @@
+<!doctype html>
+<html data-skim-md="1">
+<head><meta charset="utf-8"><title>Welcome to Skim</title><link rel="stylesheet" href="onboarding.css"></head>
+<body>
+  <main>
+    <h1><img src="../../assets/icon48.png" width="28" height="28" alt=""> Welcome to Skim</h1>
+    <p class="lede">Markdown files — READMEs, notes, AI-agent plans and reports — now render beautifully in your browser.</p>
+
+    <section class="step" id="step-file">
+      <h2><span class="num">1</span> Let Skim read local files <span id="file-status" class="status">— checking…</span></h2>
+      <p>Chrome blocks extensions from <code>file://</code> pages until you allow it. One switch:</p>
+      <button id="open-settings" class="primary">Open Skim’s Chrome settings</button>
+      <p class="hint">Turn on <strong>“Allow access to file URLs”</strong>, then come back — this page notices automatically.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="num">2</span> See it in action</h2>
+      <p>This is Skim rendering a live sample document:</p>
+      <article id="demo" class="skim markdown-body"></article>
+    </section>
+
+    <section class="step">
+      <h2><span class="num">3</span> That’s it</h2>
+      <p>Open any <code>.md</code> file — drag one into the window, or click a markdown link. Settings live behind the toolbar icon.</p>
+    </section>
+  </main>
+  <script src="../../dist/onboarding.bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+body { width: 300px; margin: 0; font: 13px/1.45 system-ui, sans-serif; background: #0d1017; color: #e8eaf0; }
+.skim-pop-head { display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-bottom: 1px solid #262b38; }
+section { padding: 10px 12px; display: grid; gap: 8px; }
+label { display: grid; gap: 3px; }
+label.row { grid-auto-flow: column; justify-content: start; align-items: center; gap: 6px; }
+select, button { font: inherit; background: #161b26; color: inherit; border: 1px solid #2c3344; border-radius: 6px; padding: 5px 8px; }
+button { cursor: pointer; }
+button.primary { background: #7aa2ff; border-color: #7aa2ff; color: #0d1017; font-weight: 600; }
+#file-cta { background: #131a2b; border-bottom: 1px solid #262b38; }
+#file-cta ol { margin: 0; padding-left: 18px; }
+footer { padding: 8px 12px; border-top: 1px solid #262b38; }
+footer a { color: #7aa2ff; text-decoration: none; }
+@media (prefers-color-scheme: light) {
+  body { background: #fff; color: #1c2130; }
+  .skim-pop-head, footer { border-color: #e3e6ee; }
+  select, button { background: #f3f5f9; border-color: #d8dce8; }
+  #file-cta { background: #eef3ff; border-color: #e3e6ee; }
+}

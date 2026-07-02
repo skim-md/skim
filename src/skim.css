@@ -1,0 +1,722 @@
+/* Glow dark "glamour" theme reproduced for the browser.
+   Palette mirrors charmbracelet/glamour's dark style (ANSI-256 -> hex). */
+:root[data-skim-md="1"] {
+  /* Dark theme — Glow's glamour palette, lifted slightly off pure black. */
+  --skim-bg: #15151a;          /* softened from near-black */
+  --skim-fg: #cfcfd4;          /* 252-ish document text */
+  --skim-heading: #4ab8f5;     /* 39, slightly softened */
+  --skim-h1-fg: #f4f2b0;       /* 228, softer yellow */
+  --skim-h1-bg: #6b6be4;       /* 63, softened bar */
+  --skim-h6: #4fb886;          /* 35 / link text */
+  --skim-hr: #56565e;          /* 240 */
+  --skim-link: #3fb6b6;        /* 30 link (teal) */
+  --skim-link-text: #4fb886;   /* 35 link text (green) */
+  --skim-image: #f08fd4;       /* 212 image */
+  --skim-muted: #7e7e86;       /* 243 */
+  --skim-code-fg: #f06b6b;     /* 203 inline code */
+  --skim-code-bg: #2c2c34;     /* 236 inline code bg */
+  --skim-panel: #1f1f26;       /* code block panel */
+  --skim-border: #3a3a44;
+  --skim-quote: #9a9aa2;
+  /* Prose: serif (Source Serif 4 / Frank Ruhl Libre for Hebrew), pairs with
+     KaTeX math. Code: JetBrains Mono. Hebrew glyphs route via unicode-range in
+     the runtime-injected fonts.css. */
+  --body: "Skim Hebrew", "Skim Serif", Georgia, "Times New Roman", serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+  --mono: "Skim Mono", "Skim Hebrew", ui-monospace, "SFMono-Regular", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+
+html[data-skim-md="1"],
+html[data-skim-md="1"] body.skim-body {
+  background: var(--skim-bg);
+  margin: 0;
+  padding: 0;
+}
+
+.skim-body {
+  color: var(--skim-fg);
+  font-family: var(--body);
+  font-size: 16.5px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+
+.skim-container { display: flex; align-items: flex-start; justify-content: center; }
+.skim-main { flex: 1 1 auto; max-width: 52rem; padding: 2.5rem 2rem 6rem; box-sizing: border-box; width: 100%; }
+.skim-container.has-toc .skim-main { margin-left: 1rem; }
+
+.skim.markdown-body { color: var(--skim-fg); word-wrap: break-word; }
+
+/* Frontmatter card ------------------------------------------------------ */
+.skim-frontmatter {
+  border: 1px solid var(--skim-border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin: 0 0 24px;
+  font-size: 0.85em;
+  display: grid;
+  gap: 4px;
+}
+.skim-fm-row { display: grid; grid-template-columns: 140px 1fr; gap: 12px; }
+.skim-fm-key { color: var(--skim-muted); }
+
+/* Headings ------------------------------------------------------------ */
+.skim h1, .skim h2, .skim h3, .skim h4, .skim h5, .skim h6 {
+  color: var(--skim-heading);
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 2.6em 0 0.8em;
+  scroll-margin-top: 1rem;
+}
+.skim h1 {
+  display: table;
+  color: var(--skim-h1-fg);
+  background: var(--skim-h1-bg);
+  padding: 0.15em 0.7em;
+  border-radius: 2px;
+  margin-top: 0.4em;
+  font-size: 1em;   /* Glow keeps H1 at body size — just the bar sets it apart */
+}
+.skim h2 { font-size: 1.35em; }
+.skim h3 { font-size: 1.18em; }
+.skim h4 { font-size: 1.05em; }
+.skim h5 { font-size: 0.95em; }
+.skim h6 { font-size: 0.9em; color: var(--skim-h6); font-weight: 400; }
+/* Glamour-style "#" prefixes on sub-headings. */
+.skim h2::before { content: "## "; color: var(--skim-muted); }
+.skim h3::before { content: "### "; color: var(--skim-muted); }
+.skim h4::before { content: "#### "; color: var(--skim-muted); }
+.skim h5::before { content: "##### "; color: var(--skim-muted); }
+.skim h6::before { content: "###### "; color: var(--skim-muted); }
+
+.skim p { margin: 0 0 1em; }
+
+/* Links & emphasis ---------------------------------------------------- */
+.skim a { color: var(--skim-link-text); text-decoration: underline; text-decoration-color: var(--skim-link); }
+.skim a:hover { color: var(--skim-link); }
+/* Internal/in-page links ([text](#id)) read as cross-references: a distinct
+   dashed underline in the accent color so they look clickable but unlike
+   external links. */
+.skim a[href^="#"] {
+  text-decoration-style: dashed;
+  text-decoration-color: var(--skim-image);
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+.skim a[href^="#"]:hover { color: var(--skim-image); text-decoration-color: var(--skim-image); }
+/* Empty {#id} anchor targets: invisible, just a scroll landing spot. */
+.skim .skim-anchor { scroll-margin-top: 1.2rem; }
+.skim strong { color: #eaeaea; font-weight: 700; }
+.skim em { font-style: italic; }
+.skim del { text-decoration: line-through; color: var(--skim-muted); }
+
+/* Blockquotes --------------------------------------------------------- */
+.skim blockquote {
+  margin: 1em 0;
+  padding: 0.2em 0 0.2em 1em;
+  padding-inline: 1em 0;
+  border-inline-start: 2px solid var(--skim-h1-bg);
+  color: var(--skim-quote);
+  font-style: italic;
+}
+.skim blockquote p { margin: 0.3em 0; }
+
+/* Lists --------------------------------------------------------------- */
+.skim ul, .skim ol { margin: 0 0 1em; padding-inline-start: 1.6em; }
+.skim li { margin: 0.25em 0; }
+.skim ul { list-style: none; padding-inline-start: 1.2em; }
+.skim ul > li::before { content: "• "; color: var(--skim-heading); margin-inline-start: -1.1em; }
+.skim li > ul, .skim li > ol { margin-top: 0.25em; }
+/* Task lists */
+.skim li.task-list-item, .skim li:has(> input[type="checkbox"]) { list-style: none; }
+.skim li:has(> input[type="checkbox"])::before { content: ""; }
+.skim input[type="checkbox"] { margin-inline-end: 0.4em; accent-color: var(--skim-h6); }
+
+/* Horizontal rule ----------------------------------------------------- */
+.skim hr { border: none; border-top: 1px solid var(--skim-hr); margin: 2em 0; }
+
+/* Inline code --------------------------------------------------------- */
+.skim code {
+  font-family: var(--mono);
+  color: var(--skim-code-fg);
+  background: var(--skim-code-bg);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.92em;
+}
+
+/* Code blocks --------------------------------------------------------- */
+.skim pre.skim-code {
+  position: relative;
+  background: var(--skim-panel);
+  border: 1px solid var(--skim-border);
+  border-radius: 6px;
+  padding: 1em 1.1em;
+  margin: 1.2em 0;
+  overflow-x: auto;
+}
+.skim pre.skim-code code {
+  display: block;
+  background: none;
+  color: #c4c4c4;
+  padding: 0;
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+/* highlight.js tokens mapped to glamour's chroma colors. */
+.skim .hljs-comment, .skim .hljs-quote { color: #676767; font-style: italic; }
+.skim .hljs-keyword, .skim .hljs-selector-tag { color: #00aaff; }
+.skim .hljs-built_in, .skim .hljs-keyword.hljs-reserved { color: #ff5fd2; }
+.skim .hljs-type, .skim .hljs-class .hljs-keyword { color: #6e6ed8; }
+.skim .hljs-operator { color: #ef8080; }
+.skim .hljs-punctuation { color: #e8e8a8; }
+.skim .hljs-name, .skim .hljs-tag { color: #b083ea; }
+.skim .hljs-attr, .skim .hljs-attribute, .skim .hljs-selector-attr { color: #7a7ae6; }
+.skim .hljs-title.class_, .skim .hljs-title.class_.inherited__ { color: #f1f1f1; font-weight: 700; text-decoration: underline; }
+.skim .hljs-symbol, .skim .hljs-bullet, .skim .hljs-variable.constant_ { color: #df8b59; }
+.skim .hljs-meta, .skim .hljs-meta .hljs-keyword { color: #ffff87; }
+.skim .hljs-title.function_, .skim .hljs-section { color: #00d787; }
+.skim .hljs-number, .skim .hljs-literal { color: #6eefc0; }
+.skim .hljs-string, .skim .hljs-regexp { color: #c69669; }
+.skim .hljs-subst, .skim .hljs-char.escape_ { color: #afffd7; }
+.skim .hljs-deletion { color: #fd5b5b; }
+.skim .hljs-addition { color: #00d787; }
+.skim .hljs-emphasis { font-style: italic; }
+.skim .hljs-strong { font-weight: 700; }
+.skim .hljs-variable, .skim .hljs-template-variable, .skim .hljs-params { color: #c4c4c4; }
+.skim .hljs-doctag, .skim .hljs-keyword.hljs-namespace { color: #ff5fd2; }
+
+/* Tables -------------------------------------------------------------- */
+/* Wrapper hosts breakout sizing, last-resort scroll, and the copy button. */
+.skim .skim-table-wrap { position: relative; margin: 1.2em 0; }
+.skim .skim-table-wrap.is-wide {
+  width: var(--skim-table-width);
+  margin-left: var(--skim-table-offset);
+}
+/* Edge shadow hints at horizontal scroll when it is genuinely unavoidable. */
+.skim .skim-table-wrap.is-scroll {
+  overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--skim-bg) 30%, rgba(21,21,26,0)) left / 24px 100% no-repeat,
+    linear-gradient(to left, var(--skim-bg) 30%, rgba(21,21,26,0)) right / 24px 100% no-repeat;
+}
+
+.skim table {
+  border-collapse: collapse;
+  table-layout: auto;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  font-size: 0.95em;
+}
+.skim .skim-table-wrap.is-wide table { width: 100%; max-width: none; }
+.skim .skim-table-wrap.is-scroll table { width: max-content; max-width: none; }
+.skim th, .skim td {
+  border: 1px solid var(--skim-border);
+  padding: 0.32em 0.6em;
+  line-height: 1.45;
+  vertical-align: top;
+  text-align: start;
+}
+.skim th { color: var(--skim-heading); font-weight: 700; background: #161616; }
+.skim tr:nth-child(even) td { background: #141414; }
+.skim td.skim-col-num, .skim th.skim-col-num { text-align: end; font-variant-numeric: tabular-nums; }
+
+/* Sticky header: pins while scrolling a tall table. */
+.skim thead th { position: sticky; top: 0; z-index: 1; }
+
+/* Sortable headers + direction indicator. */
+.skim th.skim-sortable { cursor: pointer; user-select: none; padding-right: 1.4em; }
+.skim th.skim-sortable .skim-sort-ind {
+  position: absolute; right: 0.5em; top: 50%; transform: translateY(-50%);
+  opacity: 0; transition: opacity 0.15s ease; font-size: 0.8em;
+}
+.skim th.skim-sortable { position: sticky; }   /* keep sticky alongside thead th */
+.skim th.skim-sortable:hover .skim-sort-ind { opacity: 0.4; }
+.skim th.skim-sortable:hover .skim-sort-ind::after { content: "\2195"; }   /* up-down */
+.skim th.skim-sorted .skim-sort-ind { opacity: 0.9; }
+.skim th.skim-sorted .skim-sort-ind::after { content: "\2191"; }            /* up */
+.skim th.skim-sorted.skim-sorted-desc .skim-sort-ind::after { content: "\2193"; } /* down */
+
+/* Copy button: sits just above the table (clear of the rightmost header's
+   sort control), hidden until the table is hovered (mirrors code-block copy). */
+.skim .skim-table-copy {
+  position: absolute; top: auto; bottom: calc(100% + 2px); right: 0; z-index: 6;
+  opacity: 0; transition: opacity 0.15s ease;
+}
+.skim .skim-table-wrap:hover .skim-table-copy,
+.skim .skim-table-copy:focus { opacity: 0.9; }
+
+/* Special glyphs: star ratings, pretty symbols, color emoji -------------- */
+.skim .skim-stars { font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; }
+.skim .skim-stars-3 {
+  background: linear-gradient(90deg, #f6c750, #ee964b);   /* important: gold -> orange */
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.skim .skim-stars-2 { color: #3fb6b6; }   /* common: teal */
+.skim .skim-stars-1 { color: #8a8a92; }   /* good-to-know: slate-grey */
+
+.skim .skim-sym { font-size: 1.02em; }
+.skim .skim-sym .katex { font-size: 1em; }
+
+/* Images & videos: block-level, capped, centered with padding (never
+   full-width). !important so a document's own width/height/inline styles can't
+   override. */
+.skim img,
+.skim video {
+  display: block;
+  max-width: min(100%, 32rem) !important;
+  max-height: 65vh !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 1.4em auto;
+  border-radius: 4px;
+}
+/* Embedded players (iframes) keep their aspect but are capped and centered. */
+.skim iframe {
+  display: block;
+  max-width: min(100%, 32rem) !important;
+  max-height: 65vh !important;
+  margin: 1.4em auto;
+  border-radius: 4px;
+}
+
+/* Mermaid diagrams ------------------------------------------------------ */
+.skim-mermaid { display: flex; justify-content: center; margin: 16px 0; overflow-x: auto; }
+.skim-mermaid svg { max-width: 100%; height: auto; }
+
+/* Math ---------------------------------------------------------------- */
+.skim .skim-math-display { position: relative; overflow-x: auto; overflow-y: hidden; padding: 0.4em 0; }
+.skim .skim-math-error { color: var(--skim-code-fg); font-family: var(--mono); }
+/* Inline math wraps as a single unit (like a long word) instead of breaking
+   across lines. */
+.skim .skim-math-inline { white-space: nowrap; }
+.skim .skim-math-inline .katex { font-size: 1.32em; }
+.skim .skim-math-display .katex { font-size: 1.55em; }
+
+/* Copy buttons (code + latex) ---------------------------------------- */
+.skim-copy-btn {
+  position: absolute;
+  top: 0.45em;
+  right: 0.45em;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  font-family: var(--mono);
+  font-size: 0.72em;
+  color: var(--skim-fg);
+  background: #2a2a2a;
+  border: 1px solid var(--skim-border);
+  border-radius: 4px;
+  padding: 0.2em 0.55em;
+  cursor: pointer;
+  z-index: 5;
+}
+.skim pre.skim-code:hover .skim-copy-btn,
+.skim .skim-math:hover .skim-copy-btn { opacity: 0.9; }
+.skim-copy-btn:hover { background: var(--skim-h1-bg); color: #fff; }
+.skim .skim-math-display .skim-copy-latex { top: 0.2em; right: 0.2em; }
+.skim .skim-math-inline { position: relative; }
+.skim .skim-math-inline .skim-copy-latex {
+  position: absolute; top: -1.3em; right: 0; white-space: nowrap;
+}
+
+/* Raw view ------------------------------------------------------------ */
+.skim-raw {
+  max-width: 52rem;
+  margin: 2.5rem auto 6rem;
+  padding: 0 2rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: var(--skim-fg);
+  font-family: var(--mono);
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+.skim-raw code { background: none; color: inherit; padding: 0; }
+
+/* Toolbar: collapsed half-tab that expands the theme + raw toggles -------- */
+.skim-toolbar {
+  position: fixed;
+  top: 1rem;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+}
+.skim-toolbar-handle {
+  width: 1.4rem;
+  height: 2.2rem;
+  flex: 0 0 auto;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  color: var(--skim-h1-fg);
+  background: var(--skim-h1-bg);
+  border-radius: 7px 0 0 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  font-family: var(--mono);
+  font-size: 1em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.skim-toolbar-handle:hover { filter: brightness(1.1); }
+.skim-toolbar-panel {
+  display: flex;
+  flex-direction: column;        /* opens as a vertical stack */
+  align-items: stretch;
+  gap: 0.4rem;
+  overflow: hidden;
+  max-width: 0;
+  margin-right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-width 0.22s ease, opacity 0.18s ease, margin-right 0.22s ease;
+}
+.skim-toolbar.open .skim-toolbar-panel {
+  max-width: 360px;
+  margin-right: 0.45rem;
+  opacity: 1;
+  pointer-events: auto;
+}
+.skim-toolbar-panel button {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--skim-h1-fg);
+  background: var(--skim-h1-bg);
+  border: none;
+  border-radius: 5px;
+  padding: 0.45em 0.85em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+.skim-toolbar-panel button:hover { filter: brightness(1.1); }
+.skim-theme-toggle { background: #2a2a2a !important; color: var(--skim-fg) !important; border: 1px solid var(--skim-border) !important; }
+
+/* "Padding" control: a button that expands to Normal / Big spacing options. */
+.skim-padding-control { display: flex; flex-direction: column; gap: 0.4rem; }
+.skim-padding-options { display: none; flex-direction: column; gap: 0.3rem; }
+.skim-padding-control.open .skim-padding-options { display: flex; }
+.skim-padding-opt.active { outline: 2px solid var(--skim-h1-fg); outline-offset: -1px; }
+
+/* Reading density (toolbar "Padding" = Big): roomier lines and list spacing. */
+html[data-skim-md="1"][data-skim-density="big"] .skim-body { line-height: 1.95; }
+html[data-skim-md="1"][data-skim-density="big"] .skim li { margin: 0.6em 0; }
+html[data-skim-md="1"][data-skim-density="big"] .skim li > ul,
+html[data-skim-md="1"][data-skim-density="big"] .skim li > ol { margin-top: 0.6em; }
+html[data-skim-md="1"][data-skim-density="big"] .skim p,
+html[data-skim-md="1"][data-skim-density="big"] .skim ul,
+html[data-skim-md="1"][data-skim-density="big"] .skim ol,
+html[data-skim-md="1"][data-skim-density="big"] .skim blockquote { margin-bottom: 1.6em; }
+
+/* Copy confirmation toast --------------------------------------------- */
+.skim-toast {
+  position: fixed;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  z-index: 60;
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: #fff;
+  background: var(--skim-h1-bg);
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.skim-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Table of contents --------------------------------------------------- */
+.skim-toc {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  max-height: 100vh;
+  width: 16rem;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 1.5rem 0.5rem 1.5rem 1rem;
+  overflow: hidden;
+  font-size: 0.85em;
+  display: flex;
+  flex-direction: column;
+}
+.skim-toc.collapsed .skim-toc-body { display: none; }
+.skim-toc-body {
+  position: relative;        /* offsetParent for scrollspy auto-scroll */
+  overflow-y: auto;
+  min-height: 0;
+  /* Scrollable, but hide the scrollbar. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.skim-toc-body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+.skim-toc-toggle {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--skim-heading);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3em 0.4em;
+  margin-bottom: 0.5em;
+}
+.skim-toc-list { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--skim-border); }
+.skim-toc-item { margin: 0; }
+.skim-toc-item::before { content: none; }
+.skim-toc-link {
+  display: block;
+  color: var(--skim-muted);
+  text-decoration: none;
+  padding: 0.2em 0.4em 0.2em 0.75em;
+  border-left: 2px solid transparent;
+  margin-left: -1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.skim-toc-link:hover { color: var(--skim-fg); border-left-color: var(--skim-heading); }
+.skim-toc-link.active {
+  color: var(--skim-heading);
+  border-left-color: var(--skim-heading);
+  background: rgba(0, 175, 255, 0.08);
+}
+
+@media (max-width: 900px) {
+  .skim-toc { display: none; }
+  .skim-container.has-toc .skim-main { margin-left: 0; }
+}
+
+/* Block navigation (Tab / Shift+Tab) cursor indicator ------------------- */
+.skim .skim-block { scroll-margin-top: 3rem; }
+.skim .skim-block:focus { outline: none; }
+.skim .skim-current {
+  position: relative;
+  background: rgba(74, 184, 245, 0.06);
+  border-radius: 4px;
+}
+/* Marker bar in the start-side margin (flips for RTL blocks). Uses ::after so
+   it never clobbers heading "##"/list-bullet ::before content. */
+.skim .skim-current::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1.05rem;
+  top: 0.12em;
+  bottom: 0.12em;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--skim-heading);
+}
+/* Replaced elements (images) can't use ::after — outline them instead. */
+.skim img.skim-current { outline: 3px solid var(--skim-heading); outline-offset: 5px; }
+/* A table row as the current block: a row's own background sits behind its
+   cells (zebra/header paint over it), so highlight the cells directly. */
+.skim tr.skim-current td, .skim tr.skim-current th { background: rgba(74, 184, 245, 0.16); }
+
+/* ====================================================================== */
+/* Light ("white") theme — a clean Glow-flavored light variant.          */
+/* ====================================================================== */
+html[data-skim-md="1"][data-theme="light"] {
+  --skim-bg: #f4f3ee;          /* soft warm off-white "paper" */
+  --skim-fg: #3a3a40;          /* soft dark, not near-black */
+  --skim-heading: #4a6f9c;     /* muted blue */
+  --skim-h1-fg: #f4f3ee;       /* paper-tone text on a softened bar */
+  --skim-h1-bg: #7d7de0;       /* softer lavender than the dark bar */
+  --skim-h6: #4f8c63;          /* muted green */
+  --skim-hr: #dddcd4;
+  --skim-link: #5a7faa;
+  --skim-link-text: #4f8c63;
+  --skim-image: #a86592;
+  --skim-muted: #8a8a80;
+  --skim-code-fg: #b35a72;     /* muted rose */
+  --skim-code-bg: #eae8e0;
+  --skim-panel: #eeece4;
+  --skim-border: #e0ded4;
+  --skim-quote: #6c6c66;
+}
+html[data-skim-md="1"][data-theme="light"] .skim strong { color: #2a2a2e; }
+html[data-skim-md="1"][data-theme="light"] .skim th { background: #ebe9e1; }
+html[data-skim-md="1"][data-theme="light"] .skim tr:nth-child(even) td { background: #efedE5; }
+html[data-skim-md="1"][data-theme="light"] .skim .skim-table-wrap.is-scroll {
+  background:
+    linear-gradient(to right, var(--skim-bg) 30%, rgba(244,243,238,0)) left / 24px 100% no-repeat,
+    linear-gradient(to left, var(--skim-bg) 30%, rgba(244,243,238,0)) right / 24px 100% no-repeat;
+}
+html[data-skim-md="1"][data-theme="light"] .skim .skim-stars-2 { color: #2f8f8f; }
+html[data-skim-md="1"][data-theme="light"] .skim .skim-stars-1 { color: #8a8a80; }
+html[data-skim-md="1"][data-theme="light"] .skim pre.skim-code code { color: #44474d; }
+html[data-skim-md="1"][data-theme="light"] .skim-theme-toggle {
+  background: #e7e5db !important; color: #3a3a40 !important; border: 1px solid var(--skim-border) !important;
+}
+html[data-skim-md="1"][data-theme="light"] .skim-toast { color: #fff; }
+html[data-skim-md="1"][data-theme="light"] .skim-toc-link.active { background: rgba(0, 88, 209, 0.08); }
+
+/* Light syntax palette (GitHub-light flavored) for code blocks. */
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-comment,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-quote { color: #6a737d; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-keyword,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-selector-tag,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-operator,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-doctag { color: #d73a49; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-built_in,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-type,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-attr,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-attribute,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-selector-attr,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-title.class_,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-title.function_ { color: #6f42c1; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-name,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-tag,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-addition { color: #22863a; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-number,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-literal,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-symbol,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-variable.constant_ { color: #005cc5; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-string,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-regexp { color: #032f62; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-meta { color: #e36209; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-deletion { color: #b31d28; }
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-punctuation,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-subst,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-variable,
+html[data-skim-md="1"][data-theme="light"] .skim .hljs-params { color: #24292e; }
+
+/* ====================================================================== */
+/* PDF export ("Export PDF" / Ctrl+P): a table-of-contents cover page and  */
+/* a print layout that wraps long rows/lines and prints colors faithfully. */
+/* ====================================================================== */
+
+/* Cover page: hidden on screen, revealed only in @media print. It lives in
+   .skim-main but outside the .skim article, so the heading-bar rules don't
+   touch it. */
+.skim-print-cover { display: none; }
+.skim-print-title {
+  font-size: 1.9em;
+  font-weight: 700;
+  color: var(--skim-heading);
+  margin: 0.5rem 0 1.6rem;
+  line-height: 1.25;
+}
+.skim-print-toc-heading {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--skim-fg);
+  margin: 0 0 0.7rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--skim-border);
+}
+.skim-print-toc { list-style: none; margin: 0; padding: 0; }
+.skim-print-toc-item { margin: 0.32em 0; break-inside: avoid; }
+.skim-print-toc-link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7em;
+  color: var(--skim-fg);
+  text-decoration: none;
+}
+.skim-print-toc-num {
+  flex: 0 0 auto;
+  min-width: 2.4em;
+  color: var(--skim-heading);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.skim-print-toc-text { flex: 1 1 auto; }
+.skim-print-toc-link .katex { font-size: 1em; }
+/* Section number stamped onto a body heading during export. */
+.skim-print-num { font-variant-numeric: tabular-nums; }
+
+@media print {
+  /* Print colors faithfully — backgrounds (dark page, H1 bars) and accents. */
+  html[data-skim-md="1"],
+  html[data-skim-md="1"] body.skim-body,
+  html[data-skim-md="1"] .skim,
+  html[data-skim-md="1"] .skim * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page { margin: 1.6cm; }
+
+  /* Light export prints on pure white so the page matches the white margins
+     the OS adds (no off-white block floating in white). Also darken the muted
+     greys that wash out on paper — blockquotes and body text. */
+  html[data-skim-md="1"][data-theme="light"] {
+    --skim-bg: #ffffff;
+    --skim-fg: #2b2b30;
+    --skim-muted: #5a5a54;
+    --skim-quote: #46463f;
+  }
+
+  /* Section numbers replace the on-screen "##/###" glamour prefixes in print. */
+  .skim h2::before, .skim h3::before, .skim h4::before,
+  .skim h5::before, .skim h6::before { content: "" !important; }
+
+  /* Hide every piece of on-screen chrome. */
+  .skim-toolbar,
+  .skim-toc,
+  .skim-toast,
+  .skim-raw,
+  .skim-copy-btn,
+  .skim-table-copy,
+  .skim-sort-ind { display: none !important; }
+
+  /* Block-navigation cursor artifacts. */
+  .skim .skim-current { background: none !important; }
+  .skim .skim-current::after { display: none !important; }
+  .skim img.skim-current { outline: none !important; }
+
+  /* Flatten the centered, max-width layout to the full page width. */
+  html[data-skim-md="1"], html[data-skim-md="1"] body.skim-body { background: var(--skim-bg); }
+  .skim-container { display: block; }
+  .skim-container.has-toc .skim-main { margin-left: 0; }
+  .skim-main { max-width: none; width: auto; margin: 0; padding: 0; }
+
+  /* Cover page first, then a page break before the document body. */
+  .skim-print-cover { display: block; break-after: page; }
+
+  /* Long table rows wrap to the next line instead of overflowing the page. */
+  .skim .skim-table-wrap,
+  .skim .skim-table-wrap.is-wide,
+  .skim .skim-table-wrap.is-scroll {
+    width: auto !important;
+    margin-left: 0 !important;
+    overflow: visible !important;
+    background: none !important;
+  }
+  .skim table,
+  .skim .skim-table-wrap.is-wide table,
+  .skim .skim-table-wrap.is-scroll table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: auto;
+  }
+  .skim th, .skim td {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .skim thead th { position: static !important; }   /* drop sticky positioning */
+  .skim thead { display: table-header-group; }       /* repeat header per page */
+
+  /* Long code lines wrap instead of scrolling off the page. */
+  .skim pre.skim-code {
+    overflow: visible !important;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .skim pre.skim-code code { white-space: pre-wrap; word-break: break-word; }
+  .skim .skim-math-display { overflow: visible !important; }
+
+  /* Keep atomic blocks together across page breaks. */
+  .skim pre.skim-code,
+  .skim .skim-table-wrap,
+  .skim blockquote,
+  .skim img,
+  .skim tr { break-inside: avoid; }
+  .skim h1, .skim h2, .skim h3, .skim h4, .skim h5, .skim h6 { break-after: avoid; }
+}

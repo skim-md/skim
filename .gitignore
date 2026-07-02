@@ -1,0 +1,7 @@
+node_modules/
+vendor/twemoji/
+*.log
+.DS_Store
+preview.html
+scratch-*.png
+.superpowers/

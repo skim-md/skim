@@ -1,0 +1,72 @@
+/* Early loading screen. Injected at document_start (before the raw Markdown can
+   paint) and removed the instant the renderer sets data-skim-ready on <html>,
+   so readers never see a flash of unstyled source. Pure CSS — no JS — so it
+   shows immediately while the content script bundle and fonts load.
+
+   Gated on data-skim-splash, which splash.js (injected in the same manifest
+   block) sets only for documents Chrome actually serves as plaintext
+   (text/plain, text/markdown, ...). Pages served as text/html — e.g. a GitHub
+   blob view at a .md URL — never get the attribute, so they stay visible
+   instead of blanking out for the second or two before the bundle decides
+   there's nothing to render.
+
+   Defaults to the dark Glow palette; the saved theme isn't known this early, so
+   a light-theme reader sees a brief dark splash before their page appears. */
+
+html[data-skim-splash="1"]:not([data-skim-ready]) {
+  background: radial-gradient(circle at 50% 40%, #20202c, #121217 72%) !important;
+}
+/* Hide whatever the browser painted (the raw .md text) until we're ready. */
+html[data-skim-splash="1"]:not([data-skim-ready]) body { visibility: hidden !important; }
+
+/* Spinning multi-color ring (the Glow accent palette) with a soft halo. */
+html[data-skim-splash="1"]:not([data-skim-ready])::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 66px;
+  height: 66px;
+  z-index: 2147483647;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #6b6be4, #4ab8f5, #4fb886, #f4f2b0, #f08fd4, #6b6be4);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  box-shadow: 0 0 34px rgba(74, 184, 245, 0.45);
+  transform: translate(-50%, -50%);
+  animation: skim-loader-spin 0.9s linear infinite;
+}
+
+/* A sparkle pulsing in the middle of the ring. */
+html[data-skim-splash="1"]:not([data-skim-ready])::before {
+  content: "✦";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2147483647;
+  width: 0;
+  height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ad7ff;
+  font-size: 24px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  animation: skim-loader-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skim-loader-spin {
+  from { transform: translate(-50%, -50%) rotate(0); }
+  to   { transform: translate(-50%, -50%) rotate(1turn); }
+}
+
+@keyframes skim-loader-pulse {
+  0%, 100% { opacity: 0.55; text-shadow: 0 0 8px rgba(74, 184, 245, 0.5); transform: translate(-50%, -50%) scale(0.85); }
+  50%      { opacity: 1;    text-shadow: 0 0 20px rgba(74, 184, 245, 0.95); transform: translate(-50%, -50%) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-skim-splash="1"]:not([data-skim-ready])::after { animation-duration: 2.4s; }
+  html[data-skim-splash="1"]:not([data-skim-ready])::before { animation: none; opacity: 0.85; }
+}

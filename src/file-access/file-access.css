@@ -1,0 +1,33 @@
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; font: 16px/1.55 system-ui, sans-serif; background: #0d1017; color: #e8eaf0; }
+main { max-width: 620px; padding: 32px 24px; }
+h1 { font-size: 22px; font-weight: 600; line-height: 1.4; margin: 0 0 28px; }
+
+.card { background: #161b26; border: 1px solid #2c3344; border-radius: 12px; padding: 14px 18px; margin: 0 auto 18px; max-width: 460px; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
+.card-head { display: flex; align-items: center; gap: 10px; font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid #2c3344; margin-bottom: 12px; }
+.row { padding: 7px 0; }
+.row.ghost { height: 12px; border-radius: 6px; background: #232a3a; margin: 10px 0; }
+.row.ghost.short { width: 42%; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; background: #0d1017; border: 1px solid #7aa2ff; border-radius: 8px; padding: 10px 12px; margin: 10px -4px; }
+.toggle { display: inline-flex; width: 40px; height: 22px; border-radius: 11px; background: #4a5164; padding: 2px; transition: background .25s; box-sizing: border-box; }
+.toggle .knob { width: 18px; height: 18px; border-radius: 50%; background: #e8eaf0; transition: transform .25s; }
+.toggle.on { background: #7aa2ff; }
+.toggle.on .knob { transform: translateX(18px); }
+
+.status { color: #9aa3b8; font-size: 14px; min-height: 1.5em; }
+.status.ok { color: #4ade80; font-weight: 600; }
+
+.actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+button { font: inherit; border-radius: 999px; padding: 10px 22px; cursor: pointer; border: 1px solid #2c3344; background: #161b26; color: #e8eaf0; }
+button.primary { background: #7aa2ff; border-color: #7aa2ff; color: #0d1017; font-weight: 600; }
+button.primary:hover { filter: brightness(1.08); }
+
+@media (prefers-color-scheme: light) {
+  body { background: #f6f7fa; color: #1c2130; }
+  .card { background: #fff; border-color: #e3e6ee; box-shadow: 0 8px 30px rgba(20,30,60,.08); }
+  .card-head { border-color: #e9ecf3; }
+  .row.ghost { background: #eef1f7; }
+  .toggle-row { background: #f6f7fa; }
+  .status { color: #5b6474; }
+  button { background: #fff; border-color: #d8dce8; color: #1c2130; }
+  button.primary { background: #2f6bff; border-color: #2f6bff; color: #fff; }
+}

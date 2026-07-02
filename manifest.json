@@ -1,0 +1,80 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
+  "version": "2.0.0",
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "host_permissions": ["file:///*"],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "Skim",
+    "default_icon": { "16": "assets/icon16.png", "48": "assets/icon48.png", "128": "assets/icon128.png" }
+  },
+  "options_ui": { "page": "src/options/options.html", "open_in_tab": true },
+  "content_scripts": [
+    {
+      "matches": [
+        "file:///*.md",
+        "file:///*.markdown",
+        "file:///*.mdown",
+        "file:///*.mkd",
+        "file:///*.mkdn",
+        "file:///*.mdx",
+        "*://*/*.md",
+        "*://*/*.markdown",
+        "*://*/*.mdown",
+        "*://*/*.mkd",
+        "*://*/*.mkdn",
+        "*://*/*.mdx"
+      ],
+      "css": ["src/loader.css"],
+      "js": ["src/splash.js"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "match_about_blank": false
+    },
+    {
+      "matches": [
+        "file:///*.md",
+        "file:///*.markdown",
+        "file:///*.mdown",
+        "file:///*.mkd",
+        "file:///*.mkdn",
+        "file:///*.mdx",
+        "*://*/*.md",
+        "*://*/*.markdown",
+        "*://*/*.mdown",
+        "*://*/*.mkd",
+        "*://*/*.mkdn",
+        "*://*/*.mdx"
+      ],
+      "css": ["src/skim.css"],
+      "js": ["dist/content.bundle.js"],
+      "run_at": "document_idle",
+      "all_frames": false,
+      "match_about_blank": false
+    },
+    {
+      "matches": ["file:///*"],
+      "js": ["dist/folder.bundle.js"],
+      "css": ["src/folder.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["vendor/katex.min.css", "vendor/fonts/*", "vendor/fonts.css", "vendor/webfonts/*", "dist/mermaid.bundle.js"],
+      "matches": ["file:///*", "*://*/*"]
+    }
+  ]
+}

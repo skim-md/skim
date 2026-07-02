@@ -122,6 +122,14 @@ export function enhanceTables(article) {
   }, { passive: true, signal: controller.signal });
 }
 
+// Re-measure every table's breakout against the CURRENT layout. Needed after
+// anything that changes the column geometry post-enhancement — in particular
+// mounting the TOC sidebar, which happens after populateArticle has already
+// sized breakouts for a TOC-less (wider) column.
+export function refreshBreakouts(article) {
+  article.querySelectorAll('table').forEach(updateBreakout);
+}
+
 function enhanceTable(table) {
   const wrap = document.createElement('div');
   wrap.className = 'skim-table-wrap';

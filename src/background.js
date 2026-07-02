@@ -26,6 +26,28 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 chrome.runtime.onStartup.addListener(refreshBadge);
 
+// When the user flips "Allow access to file URLs", Chrome restarts the
+// extension — so a once-per-lifetime sweep here catches the grant no matter
+// where it was made (our walkthrough, the popup path, or chrome://extensions
+// directly) and reloads any open local .md tabs so they render immediately
+// instead of sitting as plain text until a manual refresh. storage.session
+// clears on restart, making it a natural once-guard across worker wake-ups.
+(async () => {
+  try {
+    const { reloadSweepDone } = await chrome.storage.session.get('reloadSweepDone');
+    if (reloadSweepDone) return;
+    await chrome.storage.session.set({ reloadSweepDone: true });
+    const allowed = await chrome.extension.isAllowedFileSchemeAccess();
+    if (!allowed) return;
+    const tabs = await chrome.tabs.query({ url: 'file:///*' });
+    for (const tab of tabs) {
+      if (tab.id != null && tab.url && /\.(md|markdown|mdown|mkd|mkdn|mdx)([?#].*)?$/i.test(tab.url)) {
+        chrome.tabs.reload(tab.id).catch(() => { /* tab gone */ });
+      }
+    }
+  } catch { /* session storage or tabs unavailable — nothing to sweep */ }
+})();
+
 // Google-Scholar-style file-access walkthrough: when the user opens a local
 // .md file while "Allow access to file URLs" is off (so nothing can render),
 // open the walkthrough tab pointing back at their file. The "tabs" permission

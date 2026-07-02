@@ -38,10 +38,17 @@ html[data-skim-md="1"] body.skim-body {
   font-size: 16.5px;
   line-height: 1.72;
   -webkit-font-smoothing: antialiased;
+  /* The page itself never scrolls horizontally: prose wraps, and wide content
+     (tables, code, math, diagrams) scrolls inside its own wrapper. Also covers
+     ±1px rounding in table-breakout geometry. */
+  overflow-x: hidden;
 }
 
 .skim-container { display: flex; align-items: flex-start; justify-content: center; }
-.skim-main { flex: 1 1 auto; max-width: 52rem; padding: 2.5rem 2rem 6rem; box-sizing: border-box; width: 100%; }
+/* min-width: 0 — flex items default to min-width:auto, which lets intrinsically
+   wide content push the column past the viewport when the window narrows
+   (e.g. Chrome's expanding tab sidebar) and force page-level overflow. */
+.skim-main { flex: 1 1 auto; max-width: 52rem; min-width: 0; padding: 2.5rem 2rem 6rem; box-sizing: border-box; width: 100%; }
 .skim-container.has-toc .skim-main { margin-left: 1rem; }
 
 .skim.markdown-body { color: var(--skim-fg); word-wrap: break-word; }

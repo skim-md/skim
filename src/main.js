@@ -6,7 +6,7 @@ import { fetchSourceBytes } from './source.js';
 import { decodeMarkdownBytes } from './encoding.js';
 import { watchSource } from './reload.js';
 import { setupBlockNavigation } from './nav.js';
-import { enhanceTables } from './table.js';
+import { enhanceTables, refreshBreakouts } from './table.js';
 import { decorateGlyphs } from './glyphs.js';
 import { setupMarkdownCopy } from './copy-markdown.js';
 import { setupAnchors } from './anchors.js';
@@ -203,6 +203,12 @@ function render(detected, settings) {
   const toolbar = buildToolbar([themeToggle, paddingControl, exportControl, copySourceButton, viewToggle, folderButton].filter(Boolean));
   document.body.append(toolbar);
 
+  // populateArticle sized table breakouts before the TOC existed, i.e. against
+  // a wider column. Re-measure now that the final layout is in place, or wide
+  // tables overflow the viewport (visible especially at high zoom / narrow
+  // windows).
+  refreshBreakouts(article);
+
   // Copying a selection yields the equivalent Markdown source.
   setupMarkdownCopy(article);
 
@@ -257,6 +263,7 @@ function render(detected, settings) {
         if (oldToc && freshToc) oldToc.replaceWith(freshToc);
         else if (oldToc && !freshToc) { oldToc.remove(); container.classList.remove('has-toc'); }
         else if (!oldToc && freshToc) { container.classList.add('has-toc'); container.prepend(freshToc); }
+        refreshBreakouts(article); // TOC swap may have changed column geometry
         rawPre.querySelector('code').textContent = text;
         window.scrollTo(0, y);
       },

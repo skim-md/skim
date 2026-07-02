@@ -1,4 +1,4 @@
 {
   "appName": { "message": "Skim — Markdown 查看器与阅读器" },
-  "appDesc": { "message": "优雅地阅读 Markdown。打开来自电脑或网页的 .md 文件——AI 智能体输出、README、文档——支持主题、数学公式、图表和自动刷新。" }
+  "appDesc": { "message": "优雅地阅读 Markdown。打开来自电脑或网页的 .md 文件（如 AI 智能体输出、README、文档等），支持主题、数学公式、图表和自动刷新。" }
 }

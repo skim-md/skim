@@ -1,27 +1,27 @@
 # Skim — Markdown Viewer & Reader
 
-Read markdown beautifully, right in your browser. Skim renders `.md` files —
-local files, URLs, and the plans/reports your AI coding agents keep writing —
+Read markdown beautifully, right in your browser. Skim renders `.md` files
+(local files, URLs, and the plans/reports your AI coding agents keep writing)
 with themes, KaTeX math, mermaid diagrams, smart tables, and live reload.
 
 **[Install for Chrome]** (Chrome Web Store submission pending) · MIT licensed · no data collected
 
 ## Why Skim
 
-**Built for the AI era.** Agents write markdown constantly — plans, reports,
-`AGENTS.md`, scratch notes — and rewrite it while you're reading it. Skim
+**Built for the AI era.** Agents write markdown constantly: plans, reports,
+`AGENTS.md`, scratch notes, and rewrite it while you're reading it. Skim
 watches the file and re-renders in place the moment it changes, shows YAML
 frontmatter as a readable header card instead of raw text, and has a one-click
 **Copy for AI** button that turns the whole rendered document back into clean
 markdown source, ready to paste into your next prompt.
 
-**Genuinely free.** Folder browsing, math, diagrams, themes, auto-reload —
+**Genuinely free.** Folder browsing, math, diagrams, themes, auto-reload:
 every feature is available to everyone. There's no Pro tier, no paywall, no
 account. Some markdown viewers charge for folder browsing or diagram
 rendering; Skim doesn't.
 
 **Light and private.** The whole extension ships at 5.56 MB (2.27 MB without
-the optional mermaid renderer), and nothing ever leaves your machine — no
+the optional mermaid renderer), and nothing ever leaves your machine: no
 telemetry, no analytics, no network calls Skim makes on your behalf. Your
 files stay yours.
 
@@ -61,9 +61,9 @@ files stay yours.
   heuristics for undeclared legacy encodings.
 - **Large-file guard** so huge documents don't lock up the tab.
 
-Supported extensions: `.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`, `.mdx` —
-from `file://` and from `http(s)://` when the server sends the file as plain
-text (most static hosts, including GitHub raw and CDNs, do).
+Supported extensions: `.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`, `.mdx`,
+opened from `file://` and from `http(s)://` when the server sends the file as
+plain text (most static hosts, including GitHub raw and CDNs, do).
 
 ## Install (unpacked, for development)
 
@@ -94,14 +94,14 @@ Skim only acts when Chrome is showing a markdown file as plain text (both
    parses with `marked`, renders math with KaTeX, highlights code with
    highlight.js, and sanitizes the result with DOMPurify (`src/render.js`,
    `src/table.js`).
-3. Replaces the page with a styled article and mounts the UI chrome — TOC,
+3. Replaces the page with a styled article and mounts the UI chrome: TOC,
    toolbar, theme/zoom, copy buttons, print, Copy-for-AI
    (`src/ui.js`, `src/main.js`, `src/nav.js`, `src/print.js`,
    `src/copy-markdown.js`, `src/skim.css`).
 4. Watches the file for changes and re-renders in place (`src/reload.js`).
 
 Markdown served as `text/html` or as a forced download
-(`application/octet-stream`) is **not** intercepted — Skim only runs when
+(`application/octet-stream`) is **not** intercepted. Skim only runs when
 Chrome renders the file as text. Mermaid diagrams are rendered by a separate,
 lazily-loaded bundle (`src/mermaid.js`, `src/mermaid-entry.js`) so the cost is
 only paid on documents that use them. A separate content script

@@ -25,7 +25,7 @@ async function closeSelf() {
 async function onGranted() {
   document.getElementById('toggle-pic').classList.add('on');
   const status = document.getElementById('status');
-  status.textContent = '✓ Enabled — opening your file…';
+  status.textContent = '✓ Enabled. Opening your file…';
   status.classList.add('ok');
   chrome.runtime.sendMessage({ type: 'skim-refresh-badge' }).catch(() => {});
   if (Number.isFinite(sourceTabId) && sourceTabId > 0) {

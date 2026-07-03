@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5674dd"/>
+      <stop offset="1" stop-color="#8aabff"/>
+    </linearGradient>
+    <filter id="winshadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#0d1017" flood-opacity="0.38"/>
+    </filter>
+    <marker id="arrowY" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#ffd866"/>
+    </marker>
+    <clipPath id="winclip"><rect x="64" y="176" width="1152" height="644" rx="12"/></clipPath>
+    <g id="skimicon">
+      <rect width="24" height="24" rx="5.5" fill="#0d1017" stroke="#2c3344" stroke-width="1"/>
+      <rect x="4.5" y="6.2" width="15" height="2.1" rx="1.05" fill="#e8eaf0"/>
+      <rect x="4.5" y="10.9" width="10.5" height="2.1" rx="1.05" fill="#7aa2ff"/>
+      <rect x="4.5" y="15.6" width="6.4" height="2.1" rx="1.05" fill="#4a5164"/>
+      <circle cx="18.4" cy="16.7" r="1.4" fill="#ffd866"/>
+    </g>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="800" fill="url(#bg)"/>
+
+  <!-- Headline -->
+  <text x="640" y="102" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="700" fill="#ffffff" letter-spacing="-0.5">Read what your AI wrote. Instantly.</text>
+
+  <!-- Window shadow backing -->
+  <rect x="64" y="176" width="1152" height="644" rx="12" fill="#15151a" filter="url(#winshadow)"/>
+
+  <!-- Window -->
+  <g clip-path="url(#winclip)">
+    <!-- Doc background -->
+    <rect x="64" y="176" width="1152" height="644" fill="#15151a"/>
+    <!-- Browser chrome bar -->
+    <rect x="64" y="176" width="1152" height="52" fill="#0b0e14"/>
+    <line x1="64" y1="228" x2="1216" y2="228" stroke="#232838" stroke-width="1"/>
+    <use xlink:href="#skimicon" x="88" y="190"/>
+    <rect x="124" y="188" width="430" height="28" rx="14" fill="#161b26"/>
+    <text x="142" y="207" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">file:///home/nir/project/plan.md</text>
+    <!-- chrome right icons -->
+    <g stroke="#4a5164" stroke-width="2" fill="none">
+      <path d="M1146 196 a8 8 0 1 1 -6 2.6"/>
+      <path d="M1136 195 l4 3.6 -5 2.4 z" fill="#4a5164" stroke="none"/>
+    </g>
+    <g fill="#4a5164">
+      <circle cx="1186" cy="196" r="2.2"/><circle cx="1186" cy="203" r="2.2"/><circle cx="1186" cy="210" r="2.2"/>
+    </g>
+
+    <!-- TOC sidebar -->
+    <rect x="64" y="228" width="248" height="592" fill="#111219"/>
+    <line x1="312" y1="228" x2="312" y2="820" stroke="#232838" stroke-width="1"/>
+    <text x="92" y="276" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="14" fill="#4ab8f5">&#9662; Contents</text>
+    <line x1="96" y1="296" x2="96" y2="526" stroke="#2c3344" stroke-width="1.5"/>
+    <g font-family="Inter, system-ui, sans-serif" font-size="15" fill="#7e7e86">
+      <text x="112" y="316">Overview</text>
+      <text x="112" y="350">Goals</text>
+      <text x="112" y="384">Architecture</text>
+      <!-- active item -->
+      <rect x="97" y="398" width="200" height="27" fill="#4ab8f5" opacity="0.09"/>
+      <rect x="95" y="398" width="3" height="27" rx="1.5" fill="#4ab8f5"/>
+      <text x="112" y="417" fill="#4ab8f5">Implementation steps</text>
+      <text x="112" y="452">Testing plan</text>
+      <text x="112" y="486">Rollout</text>
+      <text x="112" y="520">Open questions</text>
+    </g>
+
+    <!-- Main column -->
+    <!-- H1 bar -->
+    <rect x="372" y="262" width="243" height="38" rx="3" fill="#6b6be4"/>
+    <text x="392" y="288" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="600" fill="#f4f2b0">Implementation Plan</text>
+
+    <!-- Section: Overview -->
+    <text x="372" y="360" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700"><tspan fill="#7e7e86">## </tspan><tspan fill="#4ab8f5">Overview</tspan></text>
+    <g fill="#333340">
+      <rect x="372" y="384" width="744" height="13" rx="6.5"/>
+      <rect x="372" y="410" width="744" height="13" rx="6.5"/>
+      <rect x="372" y="436" width="452" height="13" rx="6.5"/>
+    </g>
+
+    <!-- Section: Implementation steps (arrow target, current block) -->
+    <rect x="360" y="478" width="784" height="34" rx="4" fill="#4ab8f5" opacity="0.08"/>
+    <rect x="354" y="480" width="3" height="30" rx="1.5" fill="#4ab8f5"/>
+    <text x="372" y="503" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700"><tspan fill="#7e7e86">## </tspan><tspan fill="#4ab8f5">Implementation steps</tspan></text>
+
+    <!-- Task list -->
+    <g>
+      <rect x="376" y="532" width="17" height="17" rx="3.5" fill="#4fb886"/>
+      <path d="M380 540.5 l3.4 3.4 6 -6.4" stroke="#0d1017" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="408" y="534" width="430" height="13" rx="6.5" fill="#333340"/>
+
+      <rect x="376" y="566" width="17" height="17" rx="3.5" fill="#4fb886"/>
+      <path d="M380 574.5 l3.4 3.4 6 -6.4" stroke="#0d1017" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="408" y="568" width="506" height="13" rx="6.5" fill="#333340"/>
+
+      <rect x="376" y="600" width="17" height="17" rx="3.5" fill="none" stroke="#56565e" stroke-width="1.8"/>
+      <rect x="408" y="602" width="384" height="13" rx="6.5" fill="#333340"/>
+
+      <rect x="376" y="634" width="17" height="17" rx="3.5" fill="none" stroke="#56565e" stroke-width="1.8"/>
+      <rect x="408" y="636" width="460" height="13" rx="6.5" fill="#333340"/>
+    </g>
+
+    <!-- Line with inline code chip -->
+    <rect x="372" y="682" width="176" height="13" rx="6.5" fill="#333340"/>
+    <rect x="560" y="676" width="128" height="25" rx="4" fill="#2c2c34"/>
+    <text x="572" y="694" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#f06b6b">npm run dev</text>
+    <rect x="702" y="682" width="280" height="13" rx="6.5" fill="#333340"/>
+
+    <!-- Trailing ghost paragraphs -->
+    <g fill="#333340">
+      <rect x="372" y="726" width="744" height="13" rx="6.5"/>
+      <rect x="372" y="752" width="690" height="13" rx="6.5"/>
+      <rect x="372" y="778" width="720" height="13" rx="6.5"/>
+    </g>
+  </g>
+
+  <!-- Yellow accent arrow: TOC active item -> current section -->
+  <path d="M 306 411 C 342 411, 322 495, 350 495" fill="none" stroke="#ffd866" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowY)"/>
+</svg>

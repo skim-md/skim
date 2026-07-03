@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5674dd"/>
+      <stop offset="1" stop-color="#8aabff"/>
+    </linearGradient>
+    <filter id="winshadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#0d1017" flood-opacity="0.38"/>
+    </filter>
+    <filter id="pillshadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0d1017" flood-opacity="0.32"/>
+    </filter>
+    <clipPath id="winclip"><rect x="64" y="176" width="760" height="644" rx="12"/></clipPath>
+    <g id="skimicon">
+      <rect width="24" height="24" rx="5.5" fill="#0d1017" stroke="#2c3344" stroke-width="1"/>
+      <rect x="4.5" y="6.2" width="15" height="2.1" rx="1.05" fill="#e8eaf0"/>
+      <rect x="4.5" y="10.9" width="10.5" height="2.1" rx="1.05" fill="#7aa2ff"/>
+      <rect x="4.5" y="15.6" width="6.4" height="2.1" rx="1.05" fill="#4a5164"/>
+      <circle cx="18.4" cy="16.7" r="1.4" fill="#ffd866"/>
+    </g>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="800" fill="url(#bg)"/>
+
+  <!-- Headline -->
+  <text x="640" y="102" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="700" fill="#ffffff" letter-spacing="-0.5">Free. Open source. Private.</text>
+
+  <!-- ============ Light-theme window with folder sidebar ============ -->
+  <rect x="64" y="176" width="760" height="644" rx="12" fill="#f4f3ee" filter="url(#winshadow)"/>
+  <g clip-path="url(#winclip)">
+    <rect x="64" y="176" width="760" height="644" fill="#f4f3ee"/>
+    <!-- Browser chrome (dark, consistent with the set) -->
+    <rect x="64" y="176" width="760" height="52" fill="#0b0e14"/>
+    <line x1="64" y1="228" x2="824" y2="228" stroke="#232838" stroke-width="1"/>
+    <use xlink:href="#skimicon" x="88" y="190"/>
+    <rect x="124" y="188" width="340" height="28" rx="14" fill="#161b26"/>
+    <text x="142" y="207" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">file:///home/nir/project/</text>
+    <g stroke="#4a5164" stroke-width="2" fill="none">
+      <path d="M776 196 a8 8 0 1 1 -6 2.6"/>
+      <path d="M766 195 l4 3.6 -5 2.4 z" fill="#4a5164" stroke="none"/>
+    </g>
+
+    <!-- Folder sidebar -->
+    <rect x="64" y="228" width="234" height="592" fill="#edebe2"/>
+    <line x1="298" y1="228" x2="298" y2="820" stroke="#e0ded4" stroke-width="1"/>
+    <polygon points="90,270 102,270 96,278" fill="#3a3a40"/>
+    <text x="110" y="278" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="700" fill="#3a3a40">project/</text>
+    <g font-family="Inter, system-ui, sans-serif" font-size="15" fill="#6c6c66">
+      <!-- docs/ -->
+      <path d="M 106 306 h7 l3 3 h9 a2 2 0 0 1 2 2 v8 a2 2 0 0 1 -2 2 h-19 a2 2 0 0 1 -2 -2 v-11 a2 2 0 0 1 2 -2 z" fill="none" stroke="#8a8a80" stroke-width="1.8"/>
+      <text x="136" y="321">docs/</text>
+      <!-- README.md (active) -->
+      <rect x="94" y="338" width="188" height="30" rx="6" fill="#4a6f9c" opacity="0.12"/>
+      <g stroke="#4a6f9c" stroke-width="1.8" fill="none">
+        <path d="M 108 342 h8 l5 5 v11 a2 2 0 0 1 -2 2 h-11 a2 2 0 0 1 -2 -2 v-14 a2 2 0 0 1 2 -2 z"/>
+        <path d="M 116 342 v5 h5"/>
+      </g>
+      <text x="136" y="359" fill="#4a6f9c" font-weight="600">README.md</text>
+      <!-- plan.md -->
+      <g stroke="#8a8a80" stroke-width="1.8" fill="none">
+        <path d="M 108 380 h8 l5 5 v11 a2 2 0 0 1 -2 2 h-11 a2 2 0 0 1 -2 -2 v-14 a2 2 0 0 1 2 -2 z"/>
+        <path d="M 116 380 v5 h5"/>
+      </g>
+      <text x="136" y="397">plan.md</text>
+      <!-- notes.md -->
+      <g stroke="#8a8a80" stroke-width="1.8" fill="none">
+        <path d="M 108 418 h8 l5 5 v11 a2 2 0 0 1 -2 2 h-11 a2 2 0 0 1 -2 -2 v-14 a2 2 0 0 1 2 -2 z"/>
+        <path d="M 116 418 v5 h5"/>
+      </g>
+      <text x="136" y="435">notes.md</text>
+      <!-- src/ -->
+      <path d="M 106 456 h7 l3 3 h9 a2 2 0 0 1 2 2 v8 a2 2 0 0 1 -2 2 h-19 a2 2 0 0 1 -2 -2 v-11 a2 2 0 0 1 2 -2 z" fill="none" stroke="#8a8a80" stroke-width="1.8"/>
+      <text x="136" y="471">src/</text>
+    </g>
+
+    <!-- Main column: light-theme document -->
+    <rect x="340" y="262" width="112" height="38" rx="3" fill="#7d7de0"/>
+    <text x="360" y="288" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="600" fill="#f4f3ee">README</text>
+    <g fill="#dcd9ce">
+      <rect x="340" y="324" width="440" height="13" rx="6.5"/>
+      <rect x="340" y="350" width="404" height="13" rx="6.5"/>
+    </g>
+
+    <text x="340" y="412" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700"><tspan fill="#8a8a80">## </tspan><tspan fill="#4a6f9c">Features</tspan></text>
+    <g fill="#dcd9ce">
+      <rect x="340" y="436" width="440" height="13" rx="6.5"/>
+      <rect x="340" y="462" width="380" height="13" rx="6.5"/>
+    </g>
+    <!-- bullet list -->
+    <g>
+      <circle cx="356" cy="508" r="3.5" fill="#4a6f9c"/>
+      <rect x="372" y="501" width="330" height="13" rx="6.5" fill="#dcd9ce"/>
+      <circle cx="356" cy="542" r="3.5" fill="#4a6f9c"/>
+      <rect x="372" y="535" width="290" height="13" rx="6.5" fill="#dcd9ce"/>
+      <circle cx="356" cy="576" r="3.5" fill="#4a6f9c"/>
+      <rect x="372" y="569" width="356" height="13" rx="6.5" fill="#dcd9ce"/>
+    </g>
+
+    <text x="340" y="646" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700"><tspan fill="#8a8a80">## </tspan><tspan fill="#4a6f9c">License</tspan></text>
+    <g fill="#dcd9ce">
+      <rect x="340" y="670" width="440" height="13" rx="6.5"/>
+      <rect x="340" y="696" width="300" height="13" rx="6.5"/>
+      <rect x="340" y="740" width="420" height="13" rx="6.5"/>
+      <rect x="340" y="766" width="380" height="13" rx="6.5"/>
+    </g>
+  </g>
+
+  <!-- ============ Feature list card ============ -->
+  <g filter="url(#pillshadow)">
+    <rect x="844" y="250" width="380" height="490" rx="24" fill="#ffd866"/>
+    <rect x="860" y="250" width="364" height="490" rx="24" fill="#ffffff"/>
+  </g>
+  <g font-family="Inter, system-ui, sans-serif" font-size="21" font-weight="600" fill="#3f4450">
+    <!-- Folder browsing -->
+    <path d="M 892 300 h9 l3.5 3.5 h11 a2.5 2.5 0 0 1 2.5 2.5 v9.5 a2.5 2.5 0 0 1 -2.5 2.5 h-21 a2.5 2.5 0 0 1 -2.5 -2.5 v-13 a2.5 2.5 0 0 1 2.5 -2.5 z" fill="none" stroke="#4c6fd6" stroke-width="2.6" stroke-linejoin="round"/>
+    <text x="944" y="317">Folder browsing</text>
+
+    <!-- Copy for AI -->
+    <g fill="none" stroke="#4c6fd6" stroke-width="2.6" stroke-linejoin="round">
+      <rect x="890" y="368" width="19" height="22" rx="3"/>
+      <path d="M 897 368 v-5 a3 3 0 0 1 3 -3 h13 a3 3 0 0 1 3 3 v16 a3 3 0 0 1 -3 3 h-4"/>
+    </g>
+    <text x="944" y="391">Copy for AI</text>
+
+    <!-- Print / PDF export -->
+    <g fill="none" stroke="#4c6fd6" stroke-width="2.6" stroke-linejoin="round">
+      <path d="M 893 448 v-9 h18 v9"/>
+      <rect x="888" y="448" width="28" height="14" rx="3"/>
+      <path d="M 893 458 h18 v10 h-18 z"/>
+    </g>
+    <text x="944" y="465">Print &amp; PDF export</text>
+
+    <!-- 10 languages -->
+    <g fill="none" stroke="#4c6fd6" stroke-width="2.4">
+      <circle cx="902" cy="530" r="13"/>
+      <ellipse cx="902" cy="530" rx="5.5" ry="13"/>
+      <line x1="889" y1="530" x2="915" y2="530"/>
+    </g>
+    <text x="944" y="539">10 languages</text>
+
+    <!-- Blazingly fast -->
+    <polygon points="906,591 892,608 900,608 897,621 911,603 903,603" fill="#4c6fd6"/>
+    <text x="944" y="613">Blazingly fast</text>
+
+    <!-- No data collected -->
+    <g fill="none" stroke="#4c6fd6" stroke-width="2.6" stroke-linejoin="round">
+      <rect x="891" y="676" width="22" height="16" rx="3"/>
+      <path d="M 895 676 v-5 a7 7 0 0 1 14 0 v5"/>
+    </g>
+    <text x="944" y="691">No data collected</text>
+  </g>
+</svg>

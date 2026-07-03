@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5674dd"/>
+      <stop offset="1" stop-color="#8aabff"/>
+    </linearGradient>
+    <filter id="winshadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#0d1017" flood-opacity="0.38"/>
+    </filter>
+    <filter id="pillshadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0d1017" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrowM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9aa3b8"/>
+    </marker>
+    <clipPath id="winclip"><rect x="64" y="176" width="1152" height="644" rx="12"/></clipPath>
+    <g id="skimicon">
+      <rect width="24" height="24" rx="5.5" fill="#0d1017" stroke="#2c3344" stroke-width="1"/>
+      <rect x="4.5" y="6.2" width="15" height="2.1" rx="1.05" fill="#e8eaf0"/>
+      <rect x="4.5" y="10.9" width="10.5" height="2.1" rx="1.05" fill="#7aa2ff"/>
+      <rect x="4.5" y="15.6" width="6.4" height="2.1" rx="1.05" fill="#4a5164"/>
+      <circle cx="18.4" cy="16.7" r="1.4" fill="#ffd866"/>
+    </g>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="800" fill="url(#bg)"/>
+
+  <!-- Headline -->
+  <text x="640" y="102" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="44" font-weight="700" fill="#ffffff" letter-spacing="-0.5">LaTeX math. Mermaid diagrams. Offline.</text>
+
+  <!-- Window shadow backing -->
+  <rect x="64" y="176" width="1152" height="644" rx="12" fill="#15151a" filter="url(#winshadow)"/>
+
+  <g clip-path="url(#winclip)">
+    <rect x="64" y="176" width="1152" height="644" fill="#15151a"/>
+    <!-- Browser chrome -->
+    <rect x="64" y="176" width="1152" height="52" fill="#0b0e14"/>
+    <line x1="64" y1="228" x2="1216" y2="228" stroke="#232838" stroke-width="1"/>
+    <use xlink:href="#skimicon" x="88" y="190"/>
+    <rect x="124" y="188" width="430" height="28" rx="14" fill="#161b26"/>
+    <text x="142" y="207" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">file:///home/nir/project/notes.md</text>
+    <g stroke="#4a5164" stroke-width="2" fill="none">
+      <path d="M1146 196 a8 8 0 1 1 -6 2.6"/>
+      <path d="M1136 195 l4 3.6 -5 2.4 z" fill="#4a5164" stroke="none"/>
+    </g>
+    <g fill="#4a5164">
+      <circle cx="1186" cy="196" r="2.2"/><circle cx="1186" cy="203" r="2.2"/><circle cx="1186" cy="210" r="2.2"/>
+    </g>
+
+    <!-- H1 bar -->
+    <rect x="280" y="262" width="185" height="38" rx="3" fill="#6b6be4"/>
+    <text x="300" y="288" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="600" fill="#f4f2b0">Research Notes</text>
+    <rect x="280" y="322" width="580" height="13" rx="6.5" fill="#333340"/>
+
+    <!-- Section: Derivation -->
+    <text x="280" y="384" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700"><tspan fill="#7e7e86">## </tspan><tspan fill="#4ab8f5">Derivation</tspan></text>
+
+    <!-- Math display panel -->
+    <rect x="280" y="404" width="720" height="112" rx="8" fill="#1f1f26" stroke="#3a3a44" stroke-width="1"/>
+    <rect x="912" y="414" width="72" height="24" rx="4" fill="#2a2a2a" stroke="#3a3a44" stroke-width="1"/>
+    <text x="948" y="431" text-anchor="middle" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="12" fill="#cfcfd4">latex</text>
+    <!-- formula: integral of e^(-x^2) = sqrt(pi) -->
+    <g font-family="DejaVu Serif, Georgia, serif" fill="#cfcfd4">
+      <text x="482" y="478" font-size="48">&#8747;</text>
+      <text x="508" y="440" font-size="16">&#8734;</text>
+      <text x="500" y="498" font-size="16">&#8722;&#8734;</text>
+      <text x="552" y="474" font-size="31" font-style="italic">e</text>
+      <text x="572" y="452" font-size="17" font-style="italic">&#8722;x&#178;</text>
+      <text x="628" y="474" font-size="31" font-style="italic">dx</text>
+      <text x="690" y="474" font-size="31">=</text>
+      <text x="726" y="474" font-size="37">&#8730;</text>
+      <text x="750" y="474" font-size="31" font-family="Asana Math, DejaVu Serif, serif">&#120587;</text>
+      <rect x="747" y="441" width="26" height="2.6" fill="#cfcfd4"/>
+    </g>
+
+    <!-- Section: Pipeline -->
+    <text x="280" y="576" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700"><tspan fill="#7e7e86">## </tspan><tspan fill="#4ab8f5">Pipeline</tspan></text>
+
+    <!-- Mermaid flowchart -->
+    <g font-family="Inter, system-ui, sans-serif" font-size="15">
+      <!-- edges -->
+      <g stroke="#9aa3b8" stroke-width="2" fill="none">
+        <line x1="420" y1="670" x2="458" y2="670" marker-end="url(#arrowM)"/>
+        <line x1="570" y1="670" x2="606" y2="670" marker-end="url(#arrowM)"/>
+        <path d="M 700 648 C 730 628, 736 622, 760 610" marker-end="url(#arrowM)"/>
+        <path d="M 700 692 C 730 712, 736 718, 760 730" marker-end="url(#arrowM)"/>
+        <path d="M 890 605 C 920 618, 926 636, 932 652" marker-end="url(#arrowM)"/>
+        <path d="M 890 733 C 920 720, 926 704, 932 688" marker-end="url(#arrowM)"/>
+      </g>
+      <!-- edge labels -->
+      <text x="700" y="600" fill="#9aa3b8" font-size="12.5">math</text>
+      <text x="660" y="752" fill="#9aa3b8" font-size="12.5">diagram</text>
+
+      <!-- nodes -->
+      <rect x="300" y="648" width="120" height="44" rx="8" fill="#161b26" stroke="#7aa2ff" stroke-width="1.6"/>
+      <text x="360" y="675" text-anchor="middle" fill="#e8eaf0">notes.md</text>
+
+      <rect x="470" y="648" width="100" height="44" rx="8" fill="#161b26" stroke="#7aa2ff" stroke-width="1.6"/>
+      <text x="520" y="675" text-anchor="middle" fill="#e8eaf0">Parse</text>
+
+      <polygon points="668,634 726,670 668,706 610,670" fill="#161b26" stroke="#7aa2ff" stroke-width="1.6"/>
+      <text x="668" y="675" text-anchor="middle" fill="#e8eaf0" font-size="13.5">block?</text>
+
+      <rect x="764" y="584" width="112" height="42" rx="8" fill="#161b26" stroke="#7aa2ff" stroke-width="1.6"/>
+      <text x="820" y="610" text-anchor="middle" fill="#e8eaf0">KaTeX</text>
+
+      <rect x="764" y="712" width="112" height="42" rx="8" fill="#161b26" stroke="#7aa2ff" stroke-width="1.6"/>
+      <text x="820" y="738" text-anchor="middle" fill="#e8eaf0">Mermaid</text>
+
+      <rect x="930" y="648" width="110" height="44" rx="8" fill="#161b26" stroke="#7aa2ff" stroke-width="1.6"/>
+      <text x="985" y="675" text-anchor="middle" fill="#e8eaf0">Reader</text>
+    </g>
+  </g>
+
+  <!-- Callout pill: offline -->
+  <g filter="url(#pillshadow)">
+    <rect x="852" y="306" width="356" height="72" rx="36" fill="#ffd866"/>
+    <rect x="868" y="306" width="340" height="72" rx="36" fill="#ffffff"/>
+  </g>
+  <!-- crossed-cloud icon -->
+  <g stroke="#565b66" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M902 350 a9 9 0 0 1 1 -18 a13 13 0 0 1 25 -3 a10 10 0 0 1 2 21 z"/>
+    <line x1="896" y1="356" x2="934" y2="324"/>
+  </g>
+  <text x="952" y="351" font-family="Inter, system-ui, sans-serif" font-size="25" font-weight="600" fill="#4a4f59">No internet needed</text>
+</svg>

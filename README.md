@@ -6,12 +6,31 @@
 
 <img width="860" src="promo/png/01-hero.png" alt="Skim rendering a markdown plan with a table-of-contents sidebar and scrollspy">
 
+Beautiful Markdown in your browser. Local files, URLs, and everything your AI agents keep writing.
+
+<br>
+
+[![Visit skim.md](https://img.shields.io/badge/-Visit%20skim.md-8b7cff?style=for-the-badge&logoColor=white)](https://skim.md)
+&nbsp;
+[![Open the reader](https://img.shields.io/badge/-Open%20the%20reader-7C6CF0?style=for-the-badge&logo=markdown&logoColor=white)](https://skim.md/viewer)
+
+<br>
+
+**Add to your browser**
+
+[![Add to Chrome](https://img.shields.io/badge/-Add%20to%20Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/skim-markdown-viewer/PLACEHOLDERSKIMID)
+&nbsp;
+[![Add to Firefox](https://img.shields.io/badge/-Add%20to%20Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer/)
+&nbsp;
+[![Add to Edge](https://img.shields.io/badge/-Add%20to%20Edge-0078D7?style=for-the-badge&logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/PLACEHOLDERSKIMID)
+
+[Every install option →](https://skim.md/install)
+
+<br>
+
 [![MIT](https://img.shields.io/badge/License-MIT-8b7cff.svg)](#license)
-[![Chrome extension](https://img.shields.io/badge/Chrome-extension-4285F4?logo=googlechrome&logoColor=white)](#install)
 [![Version 2.1.0](https://img.shields.io/badge/version-2.1.0-informational)](#)
 [![No data collected](https://img.shields.io/badge/data%20collected-none-brightgreen)](#)
-
-Beautiful Markdown in your browser. Local files, URLs, and everything your AI agents keep writing.
 
 </div>
 
@@ -47,17 +66,35 @@ No Pro tier, no paywall, no account.
 
 ## Install
 
-1. Open `chrome://extensions`
-2. Enable **Developer mode** (top right)
-3. **Load unpacked** → select this folder
-
 <div align="center">
+
+[![Add to Chrome](https://img.shields.io/badge/-Add%20to%20Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/skim-markdown-viewer/PLACEHOLDERSKIMID)
+&nbsp;
+[![Add to Firefox](https://img.shields.io/badge/-Add%20to%20Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer/)
+&nbsp;
+[![Add to Edge](https://img.shields.io/badge/-Add%20to%20Edge-0078D7?style=for-the-badge&logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/PLACEHOLDERSKIMID)
+
+Prefer not to install? Open any file in the online reader at **[skim.md/viewer](https://skim.md/viewer)**.
+Every option, per browser, lives at **[skim.md/install](https://skim.md/install)**.
 
 <img width="640" src="promo/png/03-file-access.png" alt="Onboarding that walks you through enabling Allow access to file URLs">
 
 </div>
 
-To read local `.md` files, the popup walks you through the one Chrome switch it needs.
+<details>
+<summary><b>Install unpacked (from source)</b></summary>
+
+<br>
+
+The repo ships a built `dist/` and `vendor/`, so no build is needed.
+
+1. Open `chrome://extensions`
+2. Enable **Developer mode** (top right)
+3. **Load unpacked** → select this folder
+
+To read local `.md` files, the popup walks you through the one Chrome switch it needs ("Allow access to file URLs").
+
+</details>
 
 <details>
 <summary><b>Everything Skim does</b></summary>

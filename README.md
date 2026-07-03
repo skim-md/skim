@@ -10,21 +10,21 @@ Beautiful Markdown in your browser. Local files, URLs, and everything your AI ag
 
 <br>
 
-[![Visit skim.md](https://img.shields.io/badge/-Visit%20skim.md-8b7cff?style=for-the-badge&logoColor=white)](https://skim.md)
+[![Visit skim.md][visit-badge]][site]
 &nbsp;
-[![Open the reader](https://img.shields.io/badge/-Open%20the%20reader-7C6CF0?style=for-the-badge&logo=markdown&logoColor=white)](https://skim.md/viewer)
+[![Open the reader][reader-badge]][reader]
 
 <br>
 
 **Add to your browser**
 
-[![Add to Chrome](https://img.shields.io/badge/-Add%20to%20Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/skim-markdown-viewer/PLACEHOLDERSKIMID)
+[![Add to Chrome][chrome-badge]][chrome-store]
 &nbsp;
-[![Add to Firefox](https://img.shields.io/badge/-Add%20to%20Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer/)
+[![Add to Firefox][firefox-badge]][firefox-store]
 &nbsp;
-[![Add to Edge](https://img.shields.io/badge/-Add%20to%20Edge-0078D7?style=for-the-badge&logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/PLACEHOLDERSKIMID)
+[![Add to Edge][edge-badge]][edge-store]
 
-[Every install option →](https://skim.md/install)
+[Every install option →][install-all]
 
 <br>
 
@@ -68,14 +68,14 @@ No Pro tier, no paywall, no account.
 
 <div align="center">
 
-[![Add to Chrome](https://img.shields.io/badge/-Add%20to%20Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/skim-markdown-viewer/PLACEHOLDERSKIMID)
+[![Add to Chrome][chrome-badge]][chrome-store]
 &nbsp;
-[![Add to Firefox](https://img.shields.io/badge/-Add%20to%20Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer/)
+[![Add to Firefox][firefox-badge]][firefox-store]
 &nbsp;
-[![Add to Edge](https://img.shields.io/badge/-Add%20to%20Edge-0078D7?style=for-the-badge&logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/PLACEHOLDERSKIMID)
+[![Add to Edge][edge-badge]][edge-store]
 
-Prefer not to install? Open any file in the online reader at **[skim.md/viewer](https://skim.md/viewer)**.
-Every option, per browser, lives at **[skim.md/install](https://skim.md/install)**.
+Prefer not to install? Open any file in the online reader at **[skim.md/viewer][reader]**.
+Every option, per browser, lives at **[skim.md/install][install-all]**.
 
 <img width="640" src="promo/png/03-file-access.png" alt="Onboarding that walks you through enabling Allow access to file URLs">
 
@@ -164,3 +164,18 @@ node scripts/preview.mjs examples/sample.md   # write preview.html to eyeball
 **MIT** · No data collected · [github.com/skim-md/skim](https://github.com/skim-md/skim)
 
 </div>
+
+<!-- link & badge references -->
+
+[site]: https://skim.md
+[reader]: https://skim.md/viewer
+[install-all]: https://skim.md/install
+[chrome-store]: https://chromewebstore.google.com/detail/skim-markdown-viewer/PLACEHOLDERSKIMID
+[firefox-store]: https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer/
+[edge-store]: https://microsoftedge.microsoft.com/addons/detail/PLACEHOLDERSKIMID
+
+[visit-badge]: https://img.shields.io/badge/-Visit%20skim.md-8b7cff?style=for-the-badge&logoColor=white
+[reader-badge]: https://img.shields.io/badge/-Open%20the%20reader-7C6CF0?style=for-the-badge&logo=markdown&logoColor=white
+[chrome-badge]: https://img.shields.io/badge/-Add%20to%20Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white
+[firefox-badge]: https://img.shields.io/badge/-Add%20to%20Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white
+[edge-badge]: https://img.shields.io/badge/-Add%20to%20Edge-0078D7?style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI%2BPHBhdGggZD0iTTIxLjg2IDE3Ljg2cS4xNCAwIC4yNS4xMi4xLjEzLjEuMjV0LS4xMS4zM2wtLjMyLjQ2LS40My41My0uNDQuNXEtLjIxLjI1LS4zOC40MmwtLjIyLjIzcS0uNTguNTMtMS4zNCAxLjA0LS43Ni41MS0xLjYuOTEtLjg2LjQtMS43NC42NHQtMS42Ny4yNHEtLjkgMC0xLjY5LS4yOC0uOC0uMjgtMS40OC0uNzgtLjY4LS41LTEuMjItMS4xNy0uNTMtLjY2LS45Mi0xLjQ0LS4zOC0uNzctLjU4LTEuNi0uMi0uODMtLjItMS42NyAwLTEgLjMyLTEuOTYuMzMtLjk3Ljg3LTEuOC4xNC45NS41NSAxLjc3LjQxLjgyIDEuMDIgMS41LjYuNjggMS4zOCAxLjIxLjc4LjU0IDEuNjQuOS44Ni4zNiAxLjc3LjU2LjkyLjIgMS44LjIgMS4xMiAwIDIuMTgtLjI0IDEuMDYtLjIzIDIuMDYtLjcybC4yLS4xLjItLjA1em0tMTUuNS0xLjI3cTAgMS4xLjI3IDIuMTUuMjcgMS4wNi43OCAyLjAzLjUxLjk2IDEuMjQgMS43Ny43NC44MiAxLjY2IDEuNC0xLjQ3LS4yLTIuOC0uNzQtMS4zMy0uNTUtMi40OC0xLjM3LTEuMTUtLjgzLTIuMDgtMS45LS45Mi0xLjA3LTEuNTgtMi4zM1QuMzYgMTQuOTRRMCAxMy41NCAwIDEyLjA2cTAtLjgxLjMyLTEuNDkuMzEtLjY4LjgzLTEuMjMuNTMtLjU1IDEuMi0uOTYuNjYtLjQgMS4zNS0uNjYuNzQtLjI3IDEuNS0uMzkuNzgtLjEyIDEuNTUtLjEyLjcgMCAxLjQyLjEuNzIuMTIgMS40LjM1LjY4LjIzIDEuMzIuNTcuNjMuMzUgMS4xNi44My0uMzUgMC0uNy4wNy0uMzMuMDctLjY1LjIzdi0uMDJxLS42My4yOC0xLjIuNzQtLjU3LjQ2LTEuMDUgMS4wNC0uNDguNTgtLjg3IDEuMjYtLjM4LjY3LS42NSAxLjM5LS4yNy43MS0uNDIgMS40NC0uMTUuNzItLjE1IDEuMzh6TTExLjk2LjA2cTEuNyAwIDMuMzMuMzkgMS42My4zOCAzLjA3IDEuMTUgMS40My43NyAyLjYyIDEuOTMgMS4xOCAxLjE2IDEuOTggMi43LjQ5Ljk0Ljc2IDEuOTYuMjggMSAuMjggMi4wOCAwIC44OS0uMjMgMS43LS4yNC44LS42OSAxLjQ4LS40NS42OC0xLjEgMS4yMi0uNjQuNTMtMS40NS44OC0uNTQuMjQtMS4xMS4zNi0uNTguMTMtMS4xNi4xMy0uNDIgMC0uOTctLjAzLS41NC0uMDMtMS4xLS4xMi0uNTUtLjEtMS4wNS0uMjgtLjUtLjE5LS44NC0uNS0uMTItLjA5LS4yMy0uMjQtLjEtLjE2LS4xLS4zMyAwLS4xNS4xNi0uMzUuMTYtLjIuMzUtLjUuMi0uMjguMzYtLjY4LjE2LS40LjE2LS45NSAwLTEuMDYtLjQtMS45Ni0uNC0uOTEtMS4wNi0xLjY0LS42Ni0uNzQtMS41Mi0xLjI4LS44Ni0uNTUtMS43OS0uODktLjg0LS4zLTEuNzItLjQ0LS44Ny0uMTQtMS43Ni0uMTQtMS41NSAwLTMuMDYuNDVULjk0IDcuNTVxLjcxLTEuNzQgMS44MS0zLjEzIDEuMS0xLjM4IDIuNTItMi4zNVE2LjY4IDEuMSA4LjM3LjU4cTEuNy0uNTIgMy41OC0uNTJaIi8%2BPC9zdmc%2B

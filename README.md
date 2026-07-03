@@ -6,6 +6,12 @@
 
 <img width="860" src="promo/png/01-hero.png" alt="Skim rendering a markdown plan with a table-of-contents sidebar and scrollspy">
 
+<br>
+
+<img width="860" src="promo/video/skim-promo.gif" alt="20-second tour of Skim: rendering markdown, live reload, LaTeX math and mermaid diagrams offline, and folder browsing">
+
+<sub>▶ 20-second tour · <a href="promo/video/skim-promo.mp4">watch with sound (MP4)</a></sub>
+
 Beautiful Markdown in your browser. Local files, URLs, and everything your AI agents keep writing.
 
 <br>

@@ -5,3 +5,9 @@ vendor/twemoji/
 preview.html
 scratch-*.png
 .superpowers/
+
+# promo video: keep scripts + rendered mp4/gif, ignore intermediate frames/audio
+promo/video/frames*/
+promo/video/preview*/
+promo/video/sfx/
+promo/video/*.palette.png

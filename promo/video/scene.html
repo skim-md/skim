@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Skim — promo scene</title>
+<style>
+  @font-face{
+    font-family:'JetBrains Mono';font-weight:400;font-style:normal;font-display:block;
+    src:url('../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'JetBrains Mono';font-weight:700;font-style:normal;font-display:block;
+    src:url('../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+  :root{
+    --mono:'JetBrains Mono','DejaVu Sans Mono',monospace;
+    --sans:'Inter','Inter Display',system-ui,sans-serif;
+    --blue:#4ab8f5; --gray:#7e7e86; --ghost:#333340; --green:#4fb886;
+    --yellow:#ffd866; --red:#f06b6b; --docbg:#15151a; --chrome:#0b0e14;
+    --line:#232838; --side:#111219;
+  }
+  #stage{
+    position:relative;width:1920px;height:1080px;overflow:hidden;
+    background:linear-gradient(180deg,#5674dd 0%,#8aabff 100%);
+    font-family:var(--sans);
+  }
+  /* soft vignette + top glow */
+  #stage::before{content:"";position:absolute;inset:0;
+    background:radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%);
+    pointer-events:none}
+
+  /* ---- center logo lockup (cold open) ---- */
+  #cold{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:26px}
+  #cold .icon{width:132px;height:132px}
+  #cold .word{font-size:76px;font-weight:800;color:#fff;letter-spacing:-2px}
+  #cold .tag{font-size:24px;font-weight:500;color:rgba(255,255,255,.82);letter-spacing:.2px;margin-top:-6px}
+
+  /* ---- headline row ---- */
+  #headwrap{position:absolute;top:66px;left:0;width:1920px;height:130px;text-align:center}
+  .headline{position:absolute;top:0;left:0;width:1920px;
+    font-size:62px;font-weight:800;color:#fff;letter-spacing:-1.4px;
+    will-change:opacity,transform}
+  .headline .accent{color:#ffe9a8}
+
+  /* ---- browser window ---- */
+  #win{position:absolute;left:300px;top:236px;width:1320px;height:788px;
+    border-radius:18px;background:var(--docbg);
+    box-shadow:0 30px 80px rgba(13,16,23,.5),0 6px 20px rgba(13,16,23,.35);
+    overflow:hidden;will-change:opacity,transform;transform-origin:50% 30%}
+  #chrome{position:absolute;left:0;top:0;width:100%;height:66px;background:var(--chrome);
+    border-bottom:1px solid var(--line)}
+  #chrome .sic{position:absolute;left:26px;top:20px;width:26px;height:26px}
+  #urlbar{position:absolute;left:70px;top:19px;height:28px;width:520px;border-radius:14px;
+    background:#161b26;display:flex;align-items:center;padding:0 16px;
+    font-family:var(--mono);font-size:14px;color:#9aa3b8;white-space:nowrap;overflow:hidden}
+  #reloadicon{position:absolute;right:74px;top:20px;width:26px;height:26px;color:#4a5164}
+  #dots{position:absolute;right:34px;top:20px;width:6px;height:26px}
+  #dots i{display:block;width:5px;height:5px;border-radius:50%;background:#4a5164;margin:3px 0}
+
+  #doc{position:absolute;left:0;top:66px;width:100%;height:722px;overflow:hidden}
+
+  /* sidebar (TOC) */
+  #toc{position:absolute;left:0;top:0;width:296px;height:100%;background:var(--side);
+    border-right:1px solid var(--line);padding:30px 0 0 0;will-change:transform,opacity}
+  #toc .hd{font-family:var(--mono);font-size:15px;color:var(--blue);padding:0 0 8px 30px}
+  #toc .items{position:relative;margin-left:34px;padding-left:16px;border-left:1.5px solid #2c3344}
+  #toc .it{font-size:16px;color:#7e7e86;padding:9px 0;position:relative}
+  #toc .it.active{color:var(--blue)}
+  #toc .it.active::before{content:"";position:absolute;left:-17px;top:4px;bottom:4px;width:3px;
+    border-radius:2px;background:var(--blue)}
+  #toc .it.active::after{content:"";position:absolute;left:-16px;right:-14px;top:0;bottom:0;
+    background:var(--blue);opacity:.09;border-radius:3px;z-index:-1}
+
+  /* main column shared */
+  .col{position:absolute;left:340px;top:0;width:940px;height:100%;padding:36px 40px 0 0}
+  .screen{position:absolute;inset:0;will-change:opacity,transform}
+  .h1chip{display:inline-block;background:#6b6be4;color:#f4f2b0;font-weight:700;font-size:20px;
+    padding:9px 18px;border-radius:5px}
+  .h2{font-size:24px;font-weight:800;margin:26px 0 14px;letter-spacing:-.3px}
+  .h2 .hash{color:#7e7e86}.h2 .txt{color:var(--blue)}
+  .bar{height:14px;border-radius:7px;background:var(--ghost);margin:10px 0}
+  .rawline{font-family:var(--mono);font-size:17px;line-height:34px;color:#cfd3df;white-space:pre}
+  .rawline .tok-h{color:#f4f2b0;font-weight:700}
+  .rawline .tok-p{color:#7e7e86}
+  .rawline .tok-c{color:var(--red)}
+
+  /* task list */
+  .task{display:flex;align-items:center;gap:16px;margin:14px 0}
+  .box{width:22px;height:22px;border-radius:5px;flex:0 0 auto;position:relative;
+    border:2px solid #56565e;background:transparent}
+  .box.done{background:var(--green);border-color:var(--green)}
+  .box svg{position:absolute;inset:0}
+  .taskbar{height:14px;border-radius:7px;background:var(--ghost)}
+
+  .codechip{display:inline-flex;align-items:center;background:#2c2c34;color:var(--red);
+    font-family:var(--mono);font-size:15px;padding:5px 12px;border-radius:5px;vertical-align:middle}
+
+  /* pill */
+  .pill{position:absolute;display:inline-flex;align-items:center;gap:12px;
+    background:#fff;color:#22252c;font-weight:700;font-size:22px;
+    padding:14px 26px;border-radius:40px;box-shadow:0 12px 30px rgba(13,16,23,.4)}
+  .pill .glow{position:absolute;inset:-6px -6px -6px -6px;border-radius:44px;
+    background:linear-gradient(90deg,#ffd866,#ffb84d);z-index:-1;filter:blur(2px);opacity:.9}
+  .pill.mini{font-size:17px;padding:9px 16px 9px 14px;gap:9px;border-radius:30px}
+
+  /* math card */
+  .mathcard{position:relative;background:#1b1b22;border:1px solid #2a2a34;border-radius:12px;
+    height:150px;display:flex;align-items:center;justify-content:center;margin-top:8px}
+  .mathcard .tag{position:absolute;right:16px;top:14px;font-family:var(--mono);font-size:14px;
+    color:#8a8a96;background:#2c2c34;padding:4px 10px;border-radius:5px}
+
+  /* terminal strip */
+  #term{position:absolute;left:340px;right:40px;bottom:34px;height:132px;background:#0c0c11;
+    border:1px solid #23232c;border-radius:10px;padding:16px 20px;font-family:var(--mono);
+    font-size:16px;color:#c8ccd8;overflow:hidden;will-change:opacity,transform}
+  #term .tbar{color:#5a6172;font-size:13px;margin-bottom:10px}
+  #term .ln{line-height:26px;white-space:pre}
+  #term .prompt{color:var(--green)}
+  #term .cur{display:inline-block;width:9px;height:18px;background:#c8ccd8;
+    vertical-align:-3px;margin-left:2px}
+
+  /* file tree */
+  .tree{font-family:var(--mono);font-size:18px;line-height:36px;color:#aeb4c4}
+  .tree .row{display:flex;align-items:center;gap:10px;padding:2px 0}
+  .tree .row.dir{color:#cfd3df}
+  .tree .row.sel{color:#fff}
+  .tree .row.sel .dot{background:var(--blue)}
+  .tree .ic{width:18px;height:18px;flex:0 0 auto;opacity:.85}
+  .tree .indent{width:22px;flex:0 0 auto}
+
+  /* feature chips */
+  .chips{position:absolute;left:720px;top:60px;width:520px;display:flex;flex-wrap:wrap;gap:16px}
+  .chip{display:inline-flex;align-items:center;gap:11px;background:#1b1b22;border:1px solid #2a2a34;
+    border-radius:30px;padding:12px 20px 12px 16px;font-size:19px;font-weight:600;color:#e8eaf0;
+    will-change:opacity,transform}
+  .chip .cdot{width:12px;height:12px;border-radius:50%;flex:0 0 auto}
+
+  /* end lockup */
+  #end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:22px;will-change:opacity}
+  #end .icon{width:120px;height:120px}
+  #end .word{font-size:72px;font-weight:800;color:#fff;letter-spacing:-2px}
+  #end .vals{display:flex;gap:18px;color:rgba(255,255,255,.9);font-size:23px;font-weight:600}
+  #end .vals .sep{opacity:.5}
+  #end .cta{margin-top:8px;background:#fff;color:#2a2f6a;font-weight:800;font-size:22px;
+    padding:14px 30px;border-radius:40px;box-shadow:0 14px 34px rgba(13,16,23,.35)}
+
+  /* sweep light used for "render" moment */
+  #sweep{position:absolute;top:0;width:200px;height:100%;pointer-events:none;
+    background:linear-gradient(90deg,rgba(74,184,245,0) 0%,rgba(120,200,255,.35) 45%,rgba(255,255,255,.55) 50%,rgba(120,200,255,.35) 55%,rgba(74,184,245,0) 100%);
+    mix-blend-mode:screen;opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- reusable skim icon markup is cloned via JS -->
+  <svg style="display:none"><defs>
+    <g id="skimicon-def">
+      <rect width="24" height="24" rx="5.5" fill="#0d1017" stroke="#2c3344" stroke-width="1"/>
+      <rect x="4.5" y="6.2" width="15" height="2.1" rx="1.05" fill="#e8eaf0"/>
+      <rect x="4.5" y="10.9" width="10.5" height="2.1" rx="1.05" fill="#7aa2ff"/>
+      <rect x="4.5" y="15.6" width="6.4" height="2.1" rx="1.05" fill="#4a5164"/>
+      <circle cx="18.4" cy="16.7" r="1.4" fill="#ffd866"/>
+    </g>
+  </defs></svg>
+
+  <!-- cold open -->
+  <div id="cold">
+    <svg class="icon" viewBox="0 0 24 24"><use href="#skimicon-def"/></svg>
+    <div class="word">Skim</div>
+    <div class="tag">Markdown, the way your AI meant it</div>
+  </div>
+
+  <!-- headlines -->
+  <div id="headwrap">
+    <div class="headline" data-h="0">Read what your AI wrote. <span class="accent">Instantly.</span></div>
+    <div class="headline" data-h="1">Live-reloads while your agent writes.</div>
+    <div class="headline" data-h="2">LaTeX math. Mermaid diagrams. <span class="accent">Offline.</span></div>
+    <div class="headline" data-h="3">Free. Open source. <span class="accent">Private.</span></div>
+  </div>
+
+  <!-- browser window -->
+  <div id="win">
+    <div id="chrome">
+      <svg class="sic" viewBox="0 0 24 24"><use href="#skimicon-def"/></svg>
+      <div id="urlbar"><span id="urltext">file:///home/nir/project/plan.md</span></div>
+      <svg id="reloadicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>
+      </svg>
+      <div id="dots"><i></i><i></i><i></i></div>
+    </div>
+
+    <div id="doc">
+      <!-- TOC -->
+      <div id="toc">
+        <div class="hd">▾ Contents</div>
+        <div class="items">
+          <div class="it">Overview</div>
+          <div class="it">Goals</div>
+          <div class="it">Architecture</div>
+          <div class="it active">Implementation steps</div>
+          <div class="it">Testing plan</div>
+          <div class="it">Rollout</div>
+        </div>
+      </div>
+
+      <!-- HERO screen: raw + rendered -->
+      <div class="screen" id="s-hero">
+        <div class="col" id="hero-raw">
+          <div class="rawline"><span class="tok-h"># Implementation Plan</span></div>
+          <div class="rawline"><span class="tok-p">## Overview</span></div>
+          <div class="rawline">Ship the reader in three phases.</div>
+          <div class="rawline"><span class="tok-p">## Implementation steps</span></div>
+          <div class="rawline">- [x] Parse markdown</div>
+          <div class="rawline">- [x] Render TOC</div>
+          <div class="rawline">- [ ] Wire <span class="tok-c">`npm run dev`</span></div>
+          <div class="rawline">- [ ] Ship it</div>
+        </div>
+        <div class="col" id="hero-rendered">
+          <span class="h1chip">Implementation Plan</span>
+          <div class="h2"><span class="hash">## </span><span class="txt">Overview</span></div>
+          <div class="bar" style="width:640px"></div>
+          <div class="bar" style="width:640px"></div>
+          <div class="bar" style="width:390px"></div>
+          <div class="h2" id="hero-hi"><span class="hash">## </span><span class="txt">Implementation steps</span></div>
+          <div class="task"><span class="box done" data-tick><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" style="width:360px"></div></div>
+          <div class="task"><span class="box done" data-tick><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" style="width:430px"></div></div>
+          <div class="task"><span class="box" data-tick><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" style="width:330px"></div><span class="codechip">npm run dev</span></div>
+          <div class="task"><span class="box" data-tick><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" style="width:250px"></div></div>
+        </div>
+        <div id="sweep"></div>
+      </div>
+
+      <!-- RELOAD screen -->
+      <div class="screen" id="s-reload">
+        <div class="col">
+          <span class="h1chip">Implementation Plan</span>
+          <div class="h2"><span class="hash">## </span><span class="txt">Implementation steps</span></div>
+          <div class="task"><span class="box done"><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" style="width:360px"></div></div>
+          <div class="task"><span class="box done"><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" style="width:430px"></div></div>
+          <div class="task" id="rl-new"><span class="box" id="rl-box" data-tick><svg viewBox="0 0 22 22"><path d="M6 11.5 l3.4 3.4 6 -7" stroke="#0d1017" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="taskbar" id="rl-bar" style="width:0px"></div></div>
+        </div>
+        <div class="pill mini" id="rl-pill" style="left:900px;top:36px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22252c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 l-5-5"/></svg>
+          Updated on save
+        </div>
+        <div id="term">
+          <div class="tbar">nir@dev: ~/project</div>
+          <div class="ln"><span class="prompt">agent ▸</span> <span id="term-txt"></span><span class="cur" id="term-cur"></span></div>
+        </div>
+      </div>
+
+      <!-- MATH screen -->
+      <div class="screen" id="s-math">
+        <div class="col">
+          <span class="h1chip">Research Notes</span>
+          <div class="h2"><span class="hash">## </span><span class="txt">Derivation</span></div>
+          <div class="mathcard" id="mathcard">
+            <span class="tag">latex</span>
+            <svg id="mathsvg" width="560" height="120" viewBox="0 0 560 120"
+                 font-family="'DejaVu Serif',Georgia,serif" fill="#eef0f6">
+              <text x="46" y="78" font-size="70" font-style="italic">∫</text>
+              <text x="40" y="42" font-size="22">∞</text>
+              <text x="26" y="104" font-size="22">−∞</text>
+              <text x="110" y="72" font-size="40" font-style="italic">e</text>
+              <text x="138" y="50" font-size="24" font-style="italic">−x²</text>
+              <text x="212" y="72" font-size="40" font-style="italic">dx</text>
+              <text x="300" y="72" font-size="40">=</text>
+              <path d="M356 74 l10 22 l14 -52 h44" stroke="#eef0f6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="380" y1="44" x2="426" y2="44" stroke="#eef0f6" stroke-width="3"/>
+              <text x="389" y="74" font-size="38" font-style="italic" font-family="'DejaVu Sans',sans-serif">&#960;</text>
+            </svg>
+          </div>
+          <div class="h2"><span class="hash">## </span><span class="txt">Pipeline</span></div>
+          <svg id="mermaid" width="860" height="230" viewBox="0 0 860 230"
+               font-family="var(--sans)" font-size="17">
+            <defs>
+              <marker id="arh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#7aa2ff"/>
+              </marker>
+            </defs>
+            <!-- nodes: [notes.md] -> [Parse] -> <block?> -> {KaTeX / Mermaid} -> [Reader] -->
+            <g class="mn" data-n="0"><rect x="8" y="92" width="118" height="46" rx="8" fill="#12202e" stroke="#3d6fb0"/><text x="67" y="120" text-anchor="middle" fill="#cfe0f5">notes.md</text></g>
+            <g class="mn" data-n="1"><rect x="176" y="92" width="104" height="46" rx="8" fill="#12202e" stroke="#3d6fb0"/><text x="228" y="120" text-anchor="middle" fill="#cfe0f5">Parse</text></g>
+            <g class="mn" data-n="2"><path d="M356 115 l44 -30 l44 30 l-44 30 z" fill="#12202e" stroke="#3d6fb0"/><text x="400" y="120" text-anchor="middle" fill="#cfe0f5">block?</text></g>
+            <g class="mn" data-n="3"><rect x="512" y="36" width="120" height="44" rx="8" fill="#12202e" stroke="#3d6fb0"/><text x="572" y="63" text-anchor="middle" fill="#cfe0f5">KaTeX</text></g>
+            <g class="mn" data-n="4"><rect x="512" y="150" width="120" height="44" rx="8" fill="#12202e" stroke="#3d6fb0"/><text x="572" y="177" text-anchor="middle" fill="#cfe0f5">Mermaid</text></g>
+            <g class="mn" data-n="5"><rect x="700" y="92" width="120" height="46" rx="8" fill="#12202e" stroke="#3d6fb0"/><text x="760" y="120" text-anchor="middle" fill="#cfe0f5">Reader</text></g>
+            <!-- edges -->
+            <path class="me" d="M126 115 H176" stroke="#7aa2ff" stroke-width="2.4" fill="none" marker-end="url(#arh)"/>
+            <path class="me" d="M280 115 H352" stroke="#7aa2ff" stroke-width="2.4" fill="none" marker-end="url(#arh)"/>
+            <path class="me" d="M430 96 C480 70,486 58,510 58" stroke="#7aa2ff" stroke-width="2.4" fill="none" marker-end="url(#arh)"/>
+            <path class="me" d="M430 134 C480 160,486 172,510 172" stroke="#7aa2ff" stroke-width="2.4" fill="none" marker-end="url(#arh)"/>
+            <path class="me" d="M632 58 C672 66,676 96,698 108" stroke="#7aa2ff" stroke-width="2.4" fill="none" marker-end="url(#arh)"/>
+            <path class="me" d="M632 172 C672 164,676 132,698 122" stroke="#7aa2ff" stroke-width="2.4" fill="none" marker-end="url(#arh)"/>
+          </svg>
+        </div>
+        <div class="pill" id="math-pill" style="left:930px;top:30px">
+          <span class="glow"></span>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#22252c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h1a4 4 0 0 1 0 8H6a5 5 0 0 1-1-9.9"/><line x1="4" y1="4" x2="20" y2="20"/></svg>
+          No internet needed
+        </div>
+      </div>
+
+      <!-- FREE screen -->
+      <div class="screen" id="s-free">
+        <div class="col">
+          <span class="h1chip" style="background:#2c2c34;color:#cfd3df">file:///home/nir/project/</span>
+          <div class="tree" id="tree" style="margin-top:26px">
+            <div class="row dir"><svg class="ic" viewBox="0 0 24 24" fill="#7aa2ff"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>project/</div>
+            <div class="row dir"><span class="indent"></span><svg class="ic" viewBox="0 0 24 24" fill="#6b7488"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>docs/</div>
+            <div class="row sel"><span class="indent"></span><span class="dot" style="width:12px;height:12px;border-radius:2px;background:#4ab8f5;display:inline-block"></span>README.md</div>
+            <div class="row"><span class="indent"></span><span class="dot" style="width:12px;height:12px;border-radius:2px;background:#4a5164;display:inline-block"></span>plan.md</div>
+            <div class="row"><span class="indent"></span><span class="dot" style="width:12px;height:12px;border-radius:2px;background:#4a5164;display:inline-block"></span>notes.md</div>
+            <div class="row dir"><span class="indent"></span><svg class="ic" viewBox="0 0 24 24" fill="#6b7488"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>src/</div>
+          </div>
+        </div>
+        <div class="chips" id="chips">
+          <div class="chip"><span class="cdot" style="background:#4ab8f5"></span>Folder browsing</div>
+          <div class="chip"><span class="cdot" style="background:#4fb886"></span>Copy for AI</div>
+          <div class="chip"><span class="cdot" style="background:#ffd866"></span>Print &amp; PDF export</div>
+          <div class="chip"><span class="cdot" style="background:#c58bff"></span>10 languages</div>
+          <div class="chip"><span class="cdot" style="background:#ff8f6b"></span>Blazingly fast</div>
+          <div class="chip"><span class="cdot" style="background:#6bd0ff"></span>No data collected</div>
+        </div>
+      </div>
+
+    </div><!-- /doc -->
+  </div><!-- /win -->
+
+  <!-- end lockup -->
+  <div id="end">
+    <svg class="icon" viewBox="0 0 24 24"><use href="#skimicon-def"/></svg>
+    <div class="word">Skim</div>
+    <div class="vals"><span>Free</span><span class="sep">•</span><span>Open source</span><span class="sep">•</span><span>Private</span></div>
+    <div class="cta">Add to Chrome — free</div>
+  </div>
+
+</div>
+
+<script>
+/* ---------- timeline engine (deterministic: everything is a pure fn of t) ---------- */
+const DUR = 20.0;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+const clamp01 = x => x<0?0:x>1?1:x;
+const smooth = x => { x=clamp01(x); return x*x*(3-2*x); };
+const lerp = (a,b,u)=>a+(b-a)*u;
+// segment progress 0..1 between t0 and t1
+const seg = (t,t0,t1)=>clamp01((t-t0)/(t1-t0));
+// trapezoid envelope: 0 before a, ramps to 1 by b, holds to c, back to 0 by d
+const env = (t,a,b,c,d)=>{
+  if(t<a||t>d) return 0;
+  if(t<b) return smooth((t-a)/(b-a));
+  if(t<c) return 1;
+  return smooth(1-(t-c)/(d-c));
+};
+
+// cache refs
+const R = {
+  cold:$('#cold'), end:$('#end'), win:$('#win'), stage:$('#stage'),
+  heads:$$('.headline'), toc:$('#toc'),
+  sHero:$('#s-hero'), heroRaw:$('#hero-raw'), heroRend:$('#hero-rendered'),
+  heroHi:$('#hero-hi'), sweep:$('#sweep'),
+  sReload:$('#s-reload'), rlBar:$('#rl-bar'), rlBox:$('#rl-box'), rlPill:$('#rl-pill'),
+  termTxt:$('#term-txt'), termCur:$('#term-cur'),
+  sMath:$('#s-math'), mathsvg:$('#mathsvg'), mathPill:$('#math-pill'),
+  mnodes:$$('#mermaid .mn'), medges:$$('#mermaid .me'),
+  sFree:$('#s-free'), tree:$('#tree'), chips:$$('#chips .chip'),
+  reload:$('#reloadicon'), urltext:$('#urltext'),
+};
+
+// precompute mermaid edge lengths for draw-in
+R.medges.forEach(p=>{ const L=p.getTotalLength(); p.style.strokeDasharray=L; p.dataset.len=L; });
+
+const setOpT = (el,o,x=0,y=0,s=1)=>{ el.style.opacity=o; el.style.transform=`translate(${x}px,${y}px) scale(${s})`; };
+
+// beat windows
+const B = {
+  heroIn:[0.0,1.4], hero:[1.2,5.4],
+  reload:[5.2,9.9], math:[9.7,14.7], free:[14.5,19.3], close:[19.0,20.0]
+};
+
+function render(t){
+  // ---- cold open logo ----
+  const coldO = env(t,0.0,0.35,0.9,1.5);
+  const coldY = lerp(0,-40,seg(t,0.7,1.5));
+  setOpT(R.cold, coldO, 0, coldY, lerp(1,0.94,seg(t,0.9,1.5)));
+
+  // ---- window materialize + close ----
+  const winIn = smooth(seg(t,0.9,1.7));
+  const winOut = 1-smooth(seg(t,18.95,19.42));
+  const winO = winIn*winOut;
+  const winY = lerp(60,0,winIn) + lerp(0,26,seg(t,18.95,19.42));
+  const winS = lerp(0.965,1,winIn) * lerp(1,0.975,seg(t,18.95,19.42));
+  setOpT(R.win, winO, 0, winY, winS);
+
+  // ---- end lockup ----
+  setOpT(R.end, env(t,19.12,19.62,20,20.2), 0, lerp(18,0,seg(t,19.12,19.7)), 1);
+
+  // ---- headlines (crossfade per beat) ----
+  const hEnv = [
+    env(t,0.9,1.5,4.9,5.4),
+    env(t,5.2,5.7,9.3,9.85),
+    env(t,9.7,10.2,14.1,14.7),
+    env(t,14.5,15.0,18.7,19.3),
+  ];
+  R.heads.forEach((h,i)=>{ setOpT(h, hEnv[i], 0, lerp(16,0,clamp01(hEnv[i])) ,1); });
+
+  // ---- URL bar text per beat ----
+  const url = t<9.6 ? 'file:///home/nir/project/plan.md'
+            : t<14.4 ? 'file:///home/nir/project/notes.md'
+            : 'file:///home/nir/project/';
+  if(R.urltext.textContent!==url) R.urltext.textContent=url;
+
+  // ---- screens visibility ----
+  const eHero = env(t,0.9,1.6,4.9,5.5);
+  const eReload = env(t,5.3,5.8,9.35,9.9);
+  const eMath = env(t,9.8,10.3,14.15,14.7);
+  const eFree = env(t,14.6,15.1,18.8,19.25);
+  setOpT(R.sHero, eHero,  lerp(-24,0,clamp01(eHero)),0,1);
+  setOpT(R.sReload,eReload,lerp(24,0,clamp01(eReload)),0,1);
+  setOpT(R.sMath, eMath,  lerp(24,0,clamp01(eMath)),0,1);
+  setOpT(R.sFree, eFree,  lerp(24,0,clamp01(eFree)),0,1);
+
+  // ---- TOC slides in during hero, persists through beats, out at close ----
+  const tocIn = smooth(seg(t,2.5,3.2));
+  const tocVis = (t>2.5 && t<19.0) ? 1 : (t>=19.0? winOut : 0);
+  setOpT(R.toc, tocIn*(t<19?1:winOut), lerp(-300,0,tocIn), 0, 1);
+
+  // ===== HERO internals =====
+  // raw markdown visible early, render sweep, then rendered doc
+  const rawO = env(t,1.5,1.9,2.35,2.75);
+  R.heroRaw.style.opacity = rawO;
+  R.heroRaw.style.transform='none';
+  const rendO = smooth(seg(t,2.55,3.05));
+  R.heroRend.style.opacity = rendO*eHero;
+  // sweep light pass 2.2 -> 2.9
+  const sw = seg(t,2.15,2.95);
+  R.sweep.style.opacity = (sw>0&&sw<1)? Math.sin(sw*Math.PI)*0.9 : 0;
+  R.sweep.style.left = lerp(-220,980,sw)+'px';
+  // hero heading highlight pulse
+  R.heroHi.style.background = `rgba(74,184,245,${0.10*env(t,3.2,3.5,4.6,5.1)})`;
+  R.heroHi.style.borderRadius='4px'; R.heroHi.style.padding='2px 0 2px 6px'; R.heroHi.style.marginLeft='-6px';
+  // hero task ticks (the two 'done' boxes draw their checks 3.4 & 3.7)
+  const heroTicks=$$('#hero-rendered .box.done svg path');
+  tickPath(heroTicks[0], seg(t,3.35,3.65));
+  tickPath(heroTicks[1], seg(t,3.6,3.9));
+  // active toc item emphasis handled by CSS
+
+  // ===== RELOAD internals =====
+  // terminal types a command
+  const cmd = 'write plan.md  ▸ add task, save';
+  const nch = Math.floor(seg(t,5.9,7.4)*cmd.length + 0.001);
+  R.termTxt.textContent = cmd.slice(0,nch);
+  R.termCur.style.opacity = (Math.floor(t*2)%2===0)?1:0.15;
+  // new task row grows in, then ticks; pill flashes
+  const grow = smooth(seg(t,7.3,7.9));
+  R.rlBar.style.width = lerp(0,300,grow)+'px';
+  tickPath(R.rlBox.querySelector('path'), seg(t,8.0,8.35));
+  if(seg(t,8.0,8.35)>=1) R.rlBox.classList.add('done'); else R.rlBox.classList.remove('done');
+  // reload spinner spins around save moments
+  const spin = (env(t,7.7,7.85,8.1,8.5))*360*2;
+  R.reload.style.transform=`rotate(${spin}deg)`;
+  R.reload.style.color = seg(t,7.8,8.2)>0&&seg(t,7.8,8.2)<1 ? '#4ab8f5':'#4a5164';
+  setOpT(R.rlPill, env(t,7.9,8.2,9.2,9.6), 0, lerp(10,0,seg(t,7.9,8.3)),1);
+
+  // ===== MATH internals =====
+  const mc = smooth(seg(t,10.3,10.9));
+  R.mathsvg.style.opacity=mc; R.mathsvg.style.transform=`scale(${lerp(0.9,1,mc)})`;
+  R.mathsvg.style.transformOrigin='50% 50%';
+  // mermaid nodes pop staggered, edges draw
+  R.mnodes.forEach((n,i)=>{
+    const u=smooth(seg(t,11.5+i*0.16, 11.9+i*0.16));
+    n.style.opacity=u; n.style.transform=`scale(${lerp(0.8,1,u)})`;
+    n.style.transformOrigin='center';
+  });
+  R.medges.forEach((p,i)=>{
+    const L=+p.dataset.len;
+    const u=smooth(seg(t,11.75+i*0.12,12.25+i*0.12));
+    p.style.strokeDashoffset = L*(1-u);
+    p.style.opacity = u>0?1:0;
+  });
+  setOpT(R.mathPill, env(t,12.9,13.3,14.1,14.6), 0, lerp(0,-6,seg(t,12.9,13.3)),1);
+
+  // ===== FREE internals =====
+  const treeRows=$$('#tree .row');
+  treeRows.forEach((r,i)=>{
+    const u=smooth(seg(t,15.1+i*0.09,15.5+i*0.09));
+    r.style.opacity=u; r.style.transform=`translateX(${lerp(-16,0,u)}px)`;
+  });
+  R.chips.forEach((c,i)=>{
+    const u=smooth(seg(t,15.5+i*0.13, 16.0+i*0.13));
+    c.style.opacity=u; c.style.transform=`translateY(${lerp(14,0,u)}px) scale(${lerp(0.92,1,u)})`;
+  });
+
+  // subtle continuous parallax float on the window (very small)
+  // (kept tiny so it reads as 'alive' without wobble)
+}
+
+// draw a check path progressively using its own length
+function tickPath(path, u){
+  if(!path) return;
+  if(!path.dataset.len){ path.dataset.len = path.getTotalLength(); path.style.strokeDasharray=path.dataset.len; }
+  const L=+path.dataset.len;
+  path.style.strokeDashoffset = L*(1-clamp01(u));
+}
+
+// expose for headless capture
+window.__setTime = (t)=>{ render(Math.max(0,Math.min(DUR,t))); };
+window.__DUR = DUR;
+
+// live preview loop (loops forever) unless capturing
+let capture = new URLSearchParams(location.search).has('capture');
+if(!capture){
+  let start=null;
+  function loop(ts){
+    if(start==null) start=ts;
+    const t=((ts-start)/1000)%DUR;
+    render(t);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+} else {
+  render(0);
+}
+</script>
+</body>
+</html>

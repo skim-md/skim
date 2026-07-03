@@ -7,6 +7,8 @@ const { hasMarkdownExtension, findPlaintextPre, detectMarkdown, isHugeSource } =
 const { slugify, collectHeadings, buildToc } = await import('../src/ui.js');
 const { setupBlockNavigation } = await import('../src/nav.js');
 const { extractFrontmatter, buildFrontmatterCard } = await import('../src/frontmatter.js');
+const { EMOJI } = await import('../src/emoji.js');
+const { setupLightbox, _test: lightbox } = await import('../src/lightbox.js');
 
 // --- math protection ---------------------------------------------------
 test('protectMath extracts block and inline math with placeholders', () => {
@@ -228,6 +230,78 @@ test('render: mermaid fences keep their source unhighlighted with language class
   const html = renderMarkdown('```mermaid\ngraph TD; A-->B;\n```');
   assert.match(html, /<pre class="skim-code skim-mermaid-src"><code class="language-mermaid">/);
   assert.match(html, /graph TD; A--&gt;B;/);
+});
+
+// --- GitHub alerts / admonitions --------------------------------------
+test('renderMarkdown renders a > [!NOTE] blockquote as a styled callout', () => {
+  const html = renderMarkdown('> [!NOTE]\n> Useful information.');
+  assert.match(html, /<div class="skim-alert skim-alert-note">/);
+  assert.match(html, /class="skim-alert-title"[^>]*>[\s\S]*Note/);
+  assert.match(html, /Useful information\./);
+  // It must not also render a raw blockquote wrapper for the alert.
+  assert.ok(!/<blockquote>[\s\S]*\[!NOTE\]/.test(html));
+});
+
+test('renderMarkdown supports all five GitHub alert types', () => {
+  for (const [kw, cls, title] of [
+    ['NOTE', 'note', 'Note'],
+    ['TIP', 'tip', 'Tip'],
+    ['IMPORTANT', 'important', 'Important'],
+    ['WARNING', 'warning', 'Warning'],
+    ['CAUTION', 'caution', 'Caution'],
+  ]) {
+    const html = renderMarkdown(`> [!${kw}]\n> body`);
+    assert.match(html, new RegExp(`skim-alert skim-alert-${cls}`), `${kw} class`);
+    assert.match(html, new RegExp(`skim-alert-title[^>]*>[\\s\\S]*${title}`), `${kw} title`);
+  }
+});
+
+test('alert is case-insensitive and carries an inline icon that survives sanitization', () => {
+  const html = renderMarkdown('> [!warning]\n> Careful now.');
+  assert.match(html, /skim-alert-warning/);
+  assert.match(html, /<svg[^>]*class="skim-alert-icon"/);
+  assert.match(html, /<path/); // octicon path kept by DOMPurify svg profile
+});
+
+test('a plain blockquote (no marker) stays a blockquote, and text after the marker is not an alert', () => {
+  assert.match(renderMarkdown('> just a normal quote'), /<blockquote>/);
+  // GitHub only treats the marker as an alert when it is alone on the first line.
+  const html = renderMarkdown('> [!NOTE] trailing text\n> body');
+  assert.ok(!/skim-alert/.test(html));
+  assert.match(html, /<blockquote>/);
+});
+
+test('alert bodies render nested markdown (bold, lists) inside the callout', () => {
+  const html = renderMarkdown('> [!TIP]\n> Use **bold** and:\n>\n> - one\n> - two');
+  assert.match(html, /skim-alert-tip/);
+  assert.match(html, /<strong>bold<\/strong>/);
+  assert.match(html, /<li>one<\/li>/);
+});
+
+// --- footnotes ---------------------------------------------------------
+test('renderMarkdown renders footnote references and a definition list with backrefs', () => {
+  const html = renderMarkdown('Text with a note.[^1]\n\n[^1]: The footnote body.');
+  // Reference: superscript link into the definition.
+  assert.match(html, /<sup>[\s\S]*href="#footnote-1"[\s\S]*>1<\/a>/);
+  // Definition list at the end.
+  assert.match(html, /<(section|div)[^>]*class="footnotes"/);
+  assert.match(html, /id="footnote-1"/);
+  assert.match(html, /The footnote body\./);
+  // Backref anchor returns to the reference.
+  assert.match(html, /href="#footnote-ref-1"/);
+});
+
+test('footnote definitions parse inline markdown and survive sanitization', () => {
+  const html = renderMarkdown('See below.[^a]\n\n[^a]: A def with **bold** and a [link](https://example.com).');
+  assert.match(html, /<strong>bold<\/strong>/);
+  assert.match(html, /href="https:\/\/example\.com"/);
+  assert.ok(!/onerror/i.test(html));
+});
+
+test('multiple references to the same footnote share one definition', () => {
+  const html = renderMarkdown('First.[^x] Second.[^x]\n\n[^x]: shared.');
+  const defs = (html.match(/id="footnote-x"/g) || []).length;
+  assert.equal(defs, 1, 'exactly one definition list item for the shared footnote');
 });
 
 // --- table helpers -----------------------------------------------------
@@ -939,4 +1013,117 @@ test('buildFrontmatterCard renders rows with keys and joined list values', () =>
   const values = Array.from(card.querySelectorAll('.skim-fm-value')).map((n) => n.textContent);
   assert.deepEqual(keys, ['title', 'tags', 'status']);
   assert.deepEqual(values, ['Plan', 'ai · docs', 'draft']);
+});
+
+// --- emoji shortcodes --------------------------------------------------
+
+test('emoji: known :shortcodes: become Unicode glyphs', () => {
+  const html = renderMarkdown('Ship it :rocket: with :tada: and :+1:');
+  assert.ok(html.includes(EMOJI.rocket), 'rocket glyph present');
+  assert.ok(html.includes(EMOJI.tada), 'tada glyph present');
+  assert.ok(html.includes(EMOJI['+1']), 'thumbsup glyph present');
+  assert.ok(!/:rocket:/.test(html), 'shortcode text is gone');
+});
+
+test('emoji: unknown shortcodes are left untouched', () => {
+  const html = renderMarkdown('not an emoji :definitelynotanemoji: here');
+  assert.match(html, /:definitelynotanemoji:/);
+});
+
+test('emoji: shortcodes inside code are not replaced', () => {
+  const inline = renderMarkdown('use `:rocket:` literally');
+  assert.match(inline, /<code>:rocket:<\/code>/);
+  const fenced = renderMarkdown('```\n:rocket:\n```');
+  assert.ok(!fenced.includes(EMOJI.rocket), 'no glyph inside fenced code');
+  const el = document.createElement('div');
+  el.innerHTML = fenced;
+  // highlight.js may split the token across spans; the text content is intact.
+  assert.match(el.textContent, /:rocket:/);
+});
+
+test('emoji: a lone colon or time like 10:30 is not mangled', () => {
+  assert.match(renderMarkdown('meet at 10:30 sharp'), /10:30 sharp/);
+  assert.match(renderMarkdown('ratio a:b here'), /a:b here/);
+});
+
+// --- bare-URL autolink (lock-in: marked gfm already does this) ----------
+
+test('autolink: bare http(s) and www URLs become links, code is untouched', () => {
+  const html = renderMarkdown('See https://example.com/x and www.foo.com now');
+  assert.match(html, /<a href="https:\/\/example\.com\/x">https:\/\/example\.com\/x<\/a>/);
+  assert.match(html, /<a href="http:\/\/www\.foo\.com">www\.foo\.com<\/a>/);
+  const code = renderMarkdown('run `curl https://example.com`');
+  assert.match(code, /<code>curl https:\/\/example\.com<\/code>/);
+  assert.ok(!/<a /.test(code));
+});
+
+// --- embedded-HTML audit (survives DOMPurify) --------------------------
+
+test('embedded HTML: <details>/<summary> survive sanitization', () => {
+  const html = renderMarkdown('<details><summary>More</summary>\n\nhidden\n\n</details>');
+  assert.match(html, /<details>/);
+  assert.match(html, /<summary>More<\/summary>/);
+  assert.match(html, /hidden/);
+});
+
+test('embedded HTML: <img> width/height attributes are preserved', () => {
+  const html = renderMarkdown('<img src="https://x/y.png" width="120" height="80" alt="a">');
+  assert.match(html, /width="120"/);
+  assert.match(html, /height="80"/);
+});
+
+test('embedded HTML: <kbd>, <sup>, <sub> survive', () => {
+  assert.match(renderMarkdown('Press <kbd>Ctrl</kbd>'), /<kbd>Ctrl<\/kbd>/);
+  assert.match(renderMarkdown('x<sup>2</sup>'), /<sup>2<\/sup>/);
+  assert.match(renderMarkdown('H<sub>2</sub>O'), /<sub>2<\/sub>/);
+});
+
+// --- image lightbox ----------------------------------------------------
+
+test('lightbox: clicking a content image opens the overlay; Esc closes it', () => {
+  lightbox.close();
+  const article = document.createElement('article');
+  article.innerHTML = '<p><img src="https://example.com/pic.png" alt="pic"></p>';
+  document.body.append(article);
+  setupLightbox(article);
+  assert.equal(lightbox.isOpen(), false);
+  article.querySelector('img').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  assert.equal(lightbox.isOpen(), true);
+  document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape' }));
+  assert.equal(lightbox.isOpen(), false);
+  article.remove();
+});
+
+test('lightbox: a linked image is left to its link (does not open)', () => {
+  lightbox.close();
+  const article = document.createElement('article');
+  article.innerHTML = '<p><a href="https://example.com"><img src="https://example.com/pic.png" alt="pic"></a></p>';
+  document.body.append(article);
+  setupLightbox(article);
+  article.querySelector('img').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  assert.equal(lightbox.isOpen(), false);
+  article.remove();
+});
+
+test('lightbox: setup is idempotent across auto-reload (single listener)', () => {
+  lightbox.close();
+  const article = document.createElement('article');
+  article.innerHTML = '<img src="https://example.com/pic.png" alt="pic">';
+  document.body.append(article);
+  setupLightbox(article);
+  setupLightbox(article); // second call (simulating a reload) must be a no-op
+  assert.equal(article.dataset.skimLightbox, '1');
+  article.remove();
+  lightbox.close();
+});
+
+// --- mermaid resilience (parse layer) ----------------------------------
+
+test('mermaid: a fence between headings keeps both headings and its source', () => {
+  const html = renderMarkdown('# One\n\n```mermaid\ngraph TD; A-->B;\n```\n\n## Two\n');
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  const heads = collectHeadings(el);
+  assert.deepEqual(heads.map((h) => h.text), ['One', 'Two']);
+  assert.match(html, /class="language-mermaid"/);
 });

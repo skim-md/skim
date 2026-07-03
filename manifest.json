@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
@@ -73,7 +73,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["vendor/katex.min.css", "vendor/fonts/*", "vendor/fonts.css", "vendor/webfonts/*", "dist/mermaid.bundle.js"],
+      "resources": ["src/skim.css", "vendor/katex.min.css", "vendor/fonts/*", "vendor/fonts.css", "vendor/webfonts/*", "dist/mermaid.bundle.js"],
       "matches": ["file:///*", "*://*/*"]
     }
   ]

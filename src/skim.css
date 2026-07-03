@@ -127,6 +127,36 @@ html[data-skim-md="1"] body.skim-body {
 }
 .skim blockquote p { margin: 0.3em 0; }
 
+/* GitHub alerts / admonitions ---------------------------------------- */
+.skim-alert {
+  margin: 1.2em 0;
+  padding: 0.6em 1em;
+  border-inline-start: 3px solid var(--skim-alert-accent);
+  border-radius: 6px;
+  background: var(--skim-alert-bg);
+  color: var(--skim-fg);
+  font-style: normal;
+}
+.skim-alert > :first-child { margin-top: 0; }
+.skim-alert > :last-child { margin-bottom: 0; }
+.skim-alert p { margin: 0.4em 0; }
+.skim-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  margin: 0 0 0.35em;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--skim-alert-accent);
+}
+.skim-alert-icon { flex: 0 0 auto; fill: currentColor; }
+/* Accent + tint per type (dark theme defaults). */
+.skim-alert-note      { --skim-alert-accent: #4493f8; --skim-alert-bg: rgba(56, 139, 253, 0.10); }
+.skim-alert-tip       { --skim-alert-accent: #3fb950; --skim-alert-bg: rgba(63, 185, 80, 0.10); }
+.skim-alert-important { --skim-alert-accent: #ab7df8; --skim-alert-bg: rgba(163, 113, 247, 0.10); }
+.skim-alert-warning   { --skim-alert-accent: #d29922; --skim-alert-bg: rgba(210, 153, 34, 0.10); }
+.skim-alert-caution   { --skim-alert-accent: #f85149; --skim-alert-bg: rgba(248, 81, 73, 0.10); }
+
 /* Lists --------------------------------------------------------------- */
 .skim ul, .skim ol { margin: 0 0 1em; padding-inline-start: 1.6em; }
 .skim li { margin: 0.25em 0; }
@@ -140,6 +170,34 @@ html[data-skim-md="1"] body.skim-body {
 
 /* Horizontal rule ----------------------------------------------------- */
 .skim hr { border: none; border-top: 1px solid var(--skim-hr); margin: 2em 0; }
+
+/* Footnotes ----------------------------------------------------------- */
+.skim sup [data-footnote-ref] { text-decoration: none; font-weight: 600; padding: 0 0.1em; }
+.skim .footnotes {
+  margin-top: 2.8em;
+  padding-top: 1em;
+  border-top: 1px solid var(--skim-hr);
+  font-size: 0.9em;
+  color: var(--skim-muted);
+}
+.skim .footnotes h2 {
+  margin: 0 0 0.5em;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--skim-muted);
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.skim .footnotes h2::before { content: none !important; }
+.skim .footnotes ol { padding-inline-start: 1.5em; }
+.skim .footnotes li { margin: 0.35em 0; }
+.skim .footnotes p { margin: 0.2em 0; }
+.skim [data-footnote-backref] { text-decoration: none; margin-inline-start: 0.35em; color: var(--skim-link-text); }
+/* Briefly flag the footnote you jumped to. */
+.skim .footnotes li:target { background: var(--skim-code-bg); border-radius: 4px; }
 
 /* Inline code --------------------------------------------------------- */
 .skim code {
@@ -288,9 +346,142 @@ html[data-skim-md="1"] body.skim-body {
   border-radius: 4px;
 }
 
+/* Content images invite a click into the lightbox (linked images keep the
+   link cursor via the more specific rule below). */
+.skim img { cursor: zoom-in; }
+.skim a img { cursor: pointer; }
+
+/* Image lightbox -------------------------------------------------------- */
+.skim-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 8, 11, 0.92);
+  backdrop-filter: blur(3px);
+  overscroll-behavior: contain;
+}
+.skim-lightbox[hidden] { display: none; }
+.skim-lightbox-stage {
+  max-width: 100vw;
+  max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.skim-lightbox-content {
+  transform-origin: center center;
+  will-change: transform;
+  touch-action: none;
+  cursor: zoom-in;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.skim-lightbox-content > img,
+.skim-lightbox-content > svg {
+  max-width: 94vw !important;
+  max-height: 94vh !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  border-radius: 4px;
+  -webkit-user-drag: none;
+  pointer-events: none; /* clicks/drags belong to the content wrapper */
+}
+.skim-lightbox-content > svg { background: #fff; padding: 12px; }
+.skim-lightbox.is-zoomed .skim-lightbox-content { cursor: grab; }
+.skim-lightbox.is-zoomed .skim-lightbox-content:active { cursor: grabbing; }
+.skim-lightbox-close {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.skim-lightbox-close:hover { background: rgba(255, 255, 255, 0.24); }
+.skim-lightbox-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+html.skim-lightbox-open { overflow: hidden; }
+
+/* Embedded HTML that survives sanitization ------------------------------ */
+/* <kbd> keycaps: common in READMEs for shortcuts. */
+.skim kbd {
+  display: inline-block;
+  font: 0.82em/1 var(--mono);
+  color: var(--skim-text);
+  background: var(--skim-panel);
+  border: 1px solid var(--skim-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 0.15em 0.5em;
+  margin: 0 0.1em;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+/* <details>/<summary> collapsibles. */
+.skim details {
+  border: 1px solid var(--skim-border);
+  border-radius: 6px;
+  padding: 0.4em 0.9em;
+  margin: 1.2em 0;
+  background: var(--skim-panel);
+}
+.skim details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--skim-heading);
+  list-style: none;
+  padding: 0.2em 0;
+  outline-offset: 3px;
+}
+.skim details > summary::-webkit-details-marker { display: none; }
+.skim details > summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 0.5em;
+  color: var(--skim-muted);
+  transition: transform 0.15s ease;
+}
+.skim details[open] > summary::before { transform: rotate(90deg); }
+.skim details[open] > summary { margin-bottom: 0.4em; }
+
 /* Mermaid diagrams ------------------------------------------------------ */
-.skim-mermaid { display: flex; justify-content: center; margin: 16px 0; overflow-x: auto; }
+.skim-mermaid { position: relative; display: flex; justify-content: center; margin: 16px 0; overflow-x: auto; }
 .skim-mermaid svg { max-width: 100%; height: auto; }
+.skim-mermaid-expand {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--skim-border);
+  border-radius: 6px;
+  background: var(--skim-panel);
+  color: var(--skim-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease, color 0.12s ease;
+}
+.skim-mermaid:hover .skim-mermaid-expand,
+.skim-mermaid-expand:focus-visible { opacity: 1; }
+.skim-mermaid-expand:hover { color: var(--skim-heading); }
+.skim-mermaid-expand svg { max-width: none; }
 
 /* Math ---------------------------------------------------------------- */
 .skim .skim-math-display { position: relative; overflow-x: auto; overflow-y: hidden; padding: 0.4em 0; }
@@ -547,6 +738,12 @@ html[data-skim-md="1"][data-theme="light"] {
   --skim-quote: #6c6c66;
 }
 html[data-skim-md="1"][data-theme="light"] .skim strong { color: #2a2a2e; }
+/* Alert accents tuned for paper (GitHub light palette). */
+html[data-skim-md="1"][data-theme="light"] .skim-alert-note      { --skim-alert-accent: #0969da; --skim-alert-bg: rgba(9, 105, 218, 0.06); }
+html[data-skim-md="1"][data-theme="light"] .skim-alert-tip       { --skim-alert-accent: #1a7f37; --skim-alert-bg: rgba(26, 127, 55, 0.06); }
+html[data-skim-md="1"][data-theme="light"] .skim-alert-important { --skim-alert-accent: #8250df; --skim-alert-bg: rgba(130, 80, 223, 0.06); }
+html[data-skim-md="1"][data-theme="light"] .skim-alert-warning   { --skim-alert-accent: #9a6700; --skim-alert-bg: rgba(154, 103, 0, 0.06); }
+html[data-skim-md="1"][data-theme="light"] .skim-alert-caution   { --skim-alert-accent: #cf222e; --skim-alert-bg: rgba(207, 34, 46, 0.06); }
 html[data-skim-md="1"][data-theme="light"] .skim th { background: #ebe9e1; }
 html[data-skim-md="1"][data-theme="light"] .skim tr:nth-child(even) td { background: #efedE5; }
 html[data-skim-md="1"][data-theme="light"] .skim .skim-table-wrap.is-scroll {
@@ -670,6 +867,8 @@ html[data-skim-md="1"][data-theme="light"] .skim .hljs-params { color: #24292e; 
   .skim-raw,
   .skim-copy-btn,
   .skim-table-copy,
+  .skim-mermaid-expand,
+  .skim-lightbox,
   .skim-sort-ind { display: none !important; }
 
   /* Block-navigation cursor artifacts. */
@@ -723,6 +922,7 @@ html[data-skim-md="1"][data-theme="light"] .skim .hljs-params { color: #24292e; 
   .skim pre.skim-code,
   .skim .skim-table-wrap,
   .skim blockquote,
+  .skim .skim-alert,
   .skim img,
   .skim tr { break-inside: avoid; }
   .skim h1, .skim h2, .skim h3, .skim h4, .skim h5, .skim h6 { break-after: avoid; }

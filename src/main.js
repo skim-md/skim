@@ -11,8 +11,10 @@ import { decorateGlyphs } from './glyphs.js';
 import { setupMarkdownCopy } from './copy-markdown.js';
 import { setupAnchors } from './anchors.js';
 import { setupPrintExport } from './print.js';
+import { setupExportHtml } from './export-html.js';
 import { extractFrontmatter, buildFrontmatterCard } from './frontmatter.js';
 import { renderMermaidBlocks } from './mermaid.js';
+import { setupLightbox } from './lightbox.js';
 import {
   collectHeadings,
   buildToc,
@@ -133,6 +135,7 @@ function populateArticle(article, source, settings) {
 
   addCopyCodeButtons(article);
   enableMathCopy(article);
+  setupLightbox(article);
 
   // Needs the article mounted in the document (breakout needs layout) — both
   // callers only invoke populateArticle after the article is in the DOM.
@@ -191,6 +194,7 @@ function render(detected, settings) {
   const themeToggle = buildThemeToggle(settings);
   const paddingControl = buildPaddingControl(settings);
   const exportControl = setupPrintExport(article, headings);
+  const exportHtmlButton = setupExportHtml(article);
   const copySourceButton = buildCopySourceButton(() => currentSource);
   const folderButton = buildFolderButton();
 
@@ -200,7 +204,7 @@ function render(detected, settings) {
     container.prepend(toc);
   }
   main.append(rawPre);
-  const toolbar = buildToolbar([themeToggle, paddingControl, exportControl, copySourceButton, viewToggle, folderButton].filter(Boolean));
+  const toolbar = buildToolbar([themeToggle, paddingControl, exportControl, exportHtmlButton, copySourceButton, viewToggle, folderButton].filter(Boolean));
   document.body.append(toolbar);
 
   // populateArticle sized table breakouts before the TOC existed, i.e. against

@@ -10,6 +10,8 @@
 
 Beautiful Markdown in your browser. Local files, URLs, and everything your AI agents keep writing.
 
+A free, open-source **Markdown viewer and reader** browser extension for **Chrome, Firefox, Edge, Brave, Opera, Vivaldi, and Arc**. Render `.md` files, local Markdown, GitHub READMEs, and raw Markdown URLs into clean, formatted pages with GitHub Flavored Markdown, KaTeX math, Mermaid diagrams, syntax highlighting, and live reload. All offline, no data collected.
+
 <br>
 
 [![Visit skim.md][visit-badge]][site]
@@ -167,14 +169,16 @@ node scripts/preview.mjs examples/sample.md   # write preview.html to eyeball
 
 </div>
 
+<sub>Skim is a markdown viewer, markdown reader, and markdown preview extension for the browser: a markdown viewer for Chrome, a markdown reader for Firefox, and a README viewer for Edge, Brave, Opera, Vivaldi, and Arc. Use it to open, view, preview, and render `.md` and `.markdown` files locally, read GitHub Flavored Markdown (GFM) offline, render Mermaid diagrams and LaTeX / KaTeX math, syntax-highlight code, and read the plans, specs, and docs written by AI coding agents like Claude, ChatGPT, Cursor, and Copilot. A free, open-source, privacy-friendly alternative to pasting markdown into an online viewer.</sub>
+
 <!-- link & badge references -->
 
 [site]: https://skim.md
 [reader]: https://skim.md/viewer
 [install-all]: https://skim.md/install
-[chrome-store]: https://chromewebstore.google.com/detail/skim-markdown-viewer/PLACEHOLDERSKIMID
-[firefox-store]: https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer/
-[edge-store]: https://microsoftedge.microsoft.com/addons/detail/PLACEHOLDERSKIMID
+[chrome-store]: https://chromewebstore.google.com/detail/skim-%E2%80%94-markdown-viewer-re/feeikgjlekgeepjljmnifkbnpcnflcmd
+[firefox-store]: https://addons.mozilla.org/en-US/firefox/addon/skim-markdown-viewer-reader/
+[edge-store]: https://chromewebstore.google.com/detail/skim-%E2%80%94-markdown-viewer-re/feeikgjlekgeepjljmnifkbnpcnflcmd
 
 [visit-badge]: https://img.shields.io/badge/-Visit%20skim.md-8b7cff?style=for-the-badge&logoColor=white
 [reader-badge]: https://img.shields.io/badge/-Open%20the%20reader-7C6CF0?style=for-the-badge&logo=markdown&logoColor=white

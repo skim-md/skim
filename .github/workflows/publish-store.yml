@@ -18,6 +18,17 @@ name: Publish to Chrome Web Store
 #
 # Talks to the API with plain curl on purpose: no third-party action gets to
 # see the publishing credentials for the extension.
+#
+# Trust boundaries — three jobs on three runners:
+#   preflight  checks the secrets exist. Checks out nothing, runs no code.
+#   build      runs npm ci/test/build and zips the extension. Never sees a
+#              store secret, so a malicious install script or dependency has
+#              nothing to steal.
+#   publish    downloads the zip the build job produced and talks to the store
+#              with curl. Checks out nothing and runs no repository or
+#              dependency code. Bound to the `chrome-web-store` environment —
+#              add required reviewers to it in Settings > Environments and every
+#              store submission waits for a human click.
 
 on:
   push:
@@ -34,12 +45,16 @@ on:
         type: boolean
         default: true
 
-jobs:
-  chrome-web-store:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+permissions:
+  contents: read
 
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      ready: ${{ steps.creds.outputs.ready }}
+    steps:
       - name: Check credentials are configured
         id: creds
         env:
@@ -47,6 +62,7 @@ jobs:
           CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           missing=""
           for v in ID CLIENT_ID CLIENT_SECRET REFRESH_TOKEN; do
@@ -60,30 +76,36 @@ jobs:
           # Asked for by hand: the person is standing right there, so say no
           # loudly. On a tag push, skip quietly instead of painting the release
           # red for a repo that has not been wired to the store yet.
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "::error::Store credentials not set. Missing secrets:$missing"
             echo "Add them in Settings > Secrets and variables > Actions, then re-run."
             exit 1
           fi
           echo "::notice::Skipping store upload, secrets not configured:$missing"
 
-      - uses: actions/setup-node@v4
-        if: steps.creds.outputs.ready == 'true'
+  build:
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      zip: ${{ steps.pack.outputs.zip }}
+      version: ${{ steps.pack.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: '22'
-          cache: 'npm'
+          package-manager-cache: false
 
       - run: npm ci
-        if: steps.creds.outputs.ready == 'true'
       - run: npm test
-        if: steps.creds.outputs.ready == 'true'
       - run: npm run build
-        if: steps.creds.outputs.ready == 'true'
       - run: npm run size
-        if: steps.creds.outputs.ready == 'true'
 
       - name: Package extension
-        if: steps.creds.outputs.ready == 'true'
         id: pack
         run: |
           VERSION="$(node -p "require('./manifest.json').version")"
@@ -96,7 +118,6 @@ jobs:
           ls -lh "$ZIP"
 
       - name: Refuse to publish a version that is already live
-        if: steps.creds.outputs.ready == 'true'
         env:
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
           VERSION: ${{ steps.pack.outputs.version }}
@@ -108,14 +129,33 @@ jobs:
             exit 1
           fi
 
+      - name: Hand the zip to the publish job
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: extension-zip
+          path: ${{ steps.pack.outputs.zip }}
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: [preflight, build]
+    if: needs.preflight.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    environment: chrome-web-store
+    permissions: {}
+    steps:
+      - name: Fetch the zip the build job produced
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: extension-zip
+
       - name: Upload and publish
-        if: steps.creds.outputs.ready == 'true'
         env:
           ID: ${{ secrets.CWS_EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
-          ZIP: ${{ steps.pack.outputs.zip }}
+          ZIP: ${{ needs.build.outputs.zip }}
           TARGET: ${{ inputs.target || 'default' }}
           DO_PUBLISH: ${{ github.event_name != 'workflow_dispatch' && 'true' || inputs.publish }}
         run: |
@@ -166,9 +206,14 @@ jobs:
           fi
 
       - name: Summary
-        if: steps.creds.outputs.ready == 'true'
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          ZIP: ${{ needs.build.outputs.zip }}
+          ID: ${{ secrets.CWS_EXTENSION_ID }}
         run: |
-          echo "### Chrome Web Store" >> "$GITHUB_STEP_SUMMARY"
-          echo "Version: ${{ steps.pack.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Package: ${{ steps.pack.outputs.zip }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Listing: https://chromewebstore.google.com/detail/${{ secrets.CWS_EXTENSION_ID }}" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### Chrome Web Store"
+            echo "Version: $VERSION"
+            echo "Package: $ZIP"
+            echo "Listing: https://chromewebstore.google.com/detail/$ID"
+          } >> "$GITHUB_STEP_SUMMARY"

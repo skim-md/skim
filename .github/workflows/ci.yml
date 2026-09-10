@@ -4,6 +4,14 @@ name: CI
 # every push and PR. Publishing to the Chrome Web Store / Firefox AMO stays
 # manual (store review + secrets), so there is no deploy job — but pushing a
 # v* tag packages a ready-to-upload zip as a GitHub Release asset.
+#
+# Supply-chain notes:
+# - Actions are pinned to commit SHAs (the trailing comment is the tag each
+#   SHA was resolved from), so a moved tag upstream cannot change what runs.
+# - No dependency cache: the package job ships what it builds, and a poisoned
+#   Actions cache would feed straight into the release zip.
+# - The token is read-only except in the package job, and checkout never
+#   leaves it on disk (persist-credentials: false).
 
 on:
   push:
@@ -11,16 +19,21 @@ on:
     tags: ['v*']
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: '22'
-          cache: 'npm'
+          package-manager-cache: false
 
       - run: npm ci
       - run: npm test
@@ -36,12 +49,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: '22'
-          cache: 'npm'
+          package-manager-cache: false
 
       - run: npm ci
       - run: npm run build
@@ -55,6 +70,15 @@ jobs:
           ls -lh "skim-${VERSION}.zip"
 
       - name: Attach to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: skim-*.zip
+        # GitHub's own CLI instead of a third-party action: one less party with
+        # write access to releases. Creates the release on first run, replaces
+        # the asset on a re-run of the same tag.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" skim-*.zip --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" skim-*.zip --title "$TAG" --generate-notes --repo "$GITHUB_REPOSITORY"
+          fi

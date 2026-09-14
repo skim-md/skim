@@ -4,6 +4,7 @@
 export const DEFAULTS = {
   theme: 'dark',      // 'dark' | 'light' (base brightness)
   scheme: 'none',     // 'none' | 'grape' | 'rose' | 'ocean' | 'sunset' | 'forest' | 'mono' (color vibe)
+  font: 'serif',      // 'serif' | 'sans' | 'system' (prose typeface)
   density: 'normal',  // 'normal' | 'big'
   printMargin: 'narrow', // PDF export page margin: 'none' | 'narrow' | 'normal' | 'wide'
   readingZoom: 0,     // 0 = off; otherwise a browser zoom factor, e.g. 1.5

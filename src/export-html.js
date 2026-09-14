@@ -85,12 +85,12 @@ export async function buildStandaloneHtml(article) {
   const title = (document.title || 'Markdown document').trim();
 
   // Carry the whole look over, not just the dark/light base: the colour scheme
-  // ("vibe") and reading density are separate <html> attributes, and an export
-  // that dropped them came out in the plain dark/light palette instead of the
-  // one on screen.
+  // ("vibe"), prose font and reading density are separate <html> attributes,
+  // and an export that dropped them came out in the plain dark/light palette
+  // instead of the one on screen.
   const root = document.documentElement;
   const theme = root.getAttribute('data-theme') || 'dark';
-  const carried = ['data-scheme', 'data-skim-density', 'data-skim-print-margin']
+  const carried = ['data-scheme', 'data-skim-font', 'data-skim-density', 'data-skim-print-margin']
     .map((name) => [name, root.getAttribute(name)])
     .filter(([, value]) => value)
     .map(([name, value]) => ` ${name}="${escapeHtml(value)}"`)

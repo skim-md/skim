@@ -79,6 +79,7 @@ async function init() {
     // in the popup; the options page (same script) still binds the full set.
     bind('theme', settings.theme, 'change', (e) => { setSetting('theme', e.target.value); applyTheme(e.target.value); });
     bind('scheme', settings.scheme, 'change', (e) => setSetting('scheme', e.target.value));
+    bind('font', settings.font, 'change', (e) => setSetting('font', e.target.value));
     bind('zoom', settings.readingZoom, 'change', (e) => setSetting('readingZoom', Number(e.target.value)));
     bind('print-margin', settings.printMargin, 'change', (e) => setSetting('printMargin', e.target.value));
     bind('autoreload', settings.autoReload, 'change', (e) => setSetting('autoReload', e.target.checked));

@@ -308,6 +308,59 @@ export function applyDensity(density) {
   document.documentElement.setAttribute('data-skim-density', density);
 }
 
+// Prose typeface: serif (default Source Serif 4), sans (bundled Inter), or
+// system (the OS UI font). Reflected on <html data-skim-font>; `serif` (or an
+// unknown value) removes the attribute so the base --body stack applies.
+// Code is JetBrains Mono in every mode (see skim.css --mono).
+export const FONTS = [
+  { id: 'serif', label: 'Serif' },
+  { id: 'sans', label: 'Sans' },
+  { id: 'system', label: 'System' },
+];
+const FONT_IDS = new Set(FONTS.map((f) => f.id));
+
+export function applyFont(font) {
+  const root = document.documentElement;
+  if (FONT_IDS.has(font) && font !== 'serif') root.setAttribute('data-skim-font', font);
+  else root.removeAttribute('data-skim-font');
+}
+
+// A "Font" button that expands to Serif / Sans / System. Same expanding-option
+// shape as the Padding control (same CSS pattern, skim-font-* classes).
+export function buildFontControl(settings) {
+  const wrap = el('div', { className: 'skim-font-control' });
+  const toggle = el('button', { className: 'skim-font-toggle', type: 'button', textContent: '🔤 Font' });
+  const options = el('div', { className: 'skim-font-options' });
+
+  const optById = new Map();
+  for (const f of FONTS) {
+    const opt = el('button', { className: 'skim-font-opt', type: 'button', textContent: f.label });
+    opt.dataset.value = f.id;
+    opt.addEventListener('click', () => {
+      applyFont(f.id);
+      setSetting('font', f.id).catch(() => {});
+      mark();
+      wrap.classList.remove('open');
+    });
+    optById.set(f.id, opt);
+    options.append(opt);
+  }
+
+  const mark = () => {
+    const cur = document.documentElement.getAttribute('data-skim-font') || 'serif';
+    for (const [id, opt] of optById) opt.classList.toggle('active', id === cur);
+  };
+
+  toggle.addEventListener('click', () => wrap.classList.toggle('open'));
+  wrap.append(toggle, options);
+  applyFont(settings.font);
+  mark();
+  // Exposed so callers can resync the active option after an external font
+  // change (popup/options page or another tab) without rebinding.
+  wrap.skimSync = mark;
+  return wrap;
+}
+
 // PDF export margin: none | narrow | normal | wide. Reflected on
 // <html data-skim-print-margin> and read back by the print CSS, which draws the
 // margin itself (see print.js — the sheet is printed edge to edge so the theme

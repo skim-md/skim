@@ -703,7 +703,7 @@ test('htmlToMarkdown drops table UI controls but keeps the table', () => {
 
 // --- anchors & internal links -----------------------------------------
 const { createAnchorMarkup, setupAnchors } = await import('../src/anchors.js');
-const { stripTrailingId, applyTheme, applyScheme, applyDensity, buildThemeToggle, buildPaddingControl, applyZen, buildZenControl } = await import('../src/ui.js');
+const { stripTrailingId, applyTheme, applyScheme, applyDensity, applyFont, buildThemeToggle, buildPaddingControl, buildFontControl, applyZen, buildZenControl } = await import('../src/ui.js');
 const { setupPrintExport } = await import('../src/print.js');
 const { applyPrintMargin } = await import('../src/ui.js');
 
@@ -1015,6 +1015,37 @@ test('buildPaddingControl reflects settings.density and persists a click via set
   assert.ok(bigBtn.classList.contains('active'));
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(data.density, 'big');
+});
+
+test('applyFont reflects serif/sans/system on <html data-skim-font>', () => {
+  applyFont('serif');
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), null);
+  applyFont('sans');
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), 'sans');
+  applyFont('system');
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), 'system');
+  applyFont('bogus');
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), null);
+});
+
+test('buildFontControl reflects settings.font and persists a click via setSetting', async () => {
+  const data = installFakeChromeStorage();
+  const wrap = buildFontControl({ font: 'serif' });
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), null);
+  const serifBtn = wrap.querySelector('.skim-font-opt[data-value="serif"]');
+  const sansBtn = wrap.querySelector('.skim-font-opt[data-value="sans"]');
+  const systemBtn = wrap.querySelector('.skim-font-opt[data-value="system"]');
+  assert.ok(serifBtn.classList.contains('active'));
+  assert.ok(!sansBtn.classList.contains('active'));
+  sansBtn.click();
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), 'sans');
+  assert.ok(sansBtn.classList.contains('active'));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(data.font, 'sans');
+  systemBtn.click();
+  assert.equal(document.documentElement.getAttribute('data-skim-font'), 'system');
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(data.font, 'system');
 });
 
 test('applyZen reflects on/off on <html data-skim-zen>', () => {

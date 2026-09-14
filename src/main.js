@@ -29,6 +29,7 @@ import {
   buildViewToggle,
   buildThemeToggle,
   buildPaletteControl,
+  buildFontControl,
   buildPaddingControl,
   buildZenControl,
   buildToolbar,
@@ -36,6 +37,7 @@ import {
   buildCopySourceButton,
   applyTheme,
   applyScheme,
+  applyFont,
   applyDensity,
   applyZen,
   applyPrintMargin,
@@ -183,6 +185,7 @@ function render(detected, settings) {
 
   applyTheme(settings.theme);
   applyScheme(settings.scheme);
+  applyFont(settings.font);
   applyDensity(settings.density);
   applyZen(settings.zen);
   applyPrintMargin(settings.printMargin);
@@ -221,6 +224,7 @@ function render(detected, settings) {
   const { button: viewToggle, rawPre } = buildViewToggle(article, rawSource);
   const themeToggle = buildThemeToggle(settings);
   const paletteControl = buildPaletteControl(settings);
+  const fontControl = buildFontControl(settings);
   const paddingControl = buildPaddingControl(settings);
   const zenControl = buildZenControl(settings);
   const exportControl = setupPrintExport(article, headings);
@@ -234,7 +238,7 @@ function render(detected, settings) {
     container.prepend(toc);
   }
   main.append(rawPre);
-  const toolbar = buildToolbar([themeToggle, paletteControl, paddingControl, zenControl, exportControl, exportHtmlButton, copySourceButton, viewToggle, folderButton, quizControl].filter(Boolean));
+  const toolbar = buildToolbar([themeToggle, paletteControl, fontControl, paddingControl, zenControl, exportControl, exportHtmlButton, copySourceButton, viewToggle, folderButton, quizControl].filter(Boolean));
   toolbar.skimSetQuizMark(quizzes.length > 0);
   document.body.append(toolbar);
 
@@ -275,6 +279,7 @@ function render(detected, settings) {
   onSettingsChanged((patch) => {
     if (patch.theme) { applyTheme(patch.theme); themeToggle.skimSync?.(); }
     if (patch.scheme) { applyScheme(patch.scheme); paletteControl.skimSync?.(); }
+    if (patch.font) { applyFont(patch.font); fontControl.skimSync?.(); }
     if (patch.density) { applyDensity(patch.density); paddingControl.skimSync?.(); }
     if (patch.zen !== undefined) { applyZen(patch.zen); zenControl.skimSync?.(); }
     if (patch.printMargin) { applyPrintMargin(patch.printMargin); exportControl.skimSync?.(); }

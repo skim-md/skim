@@ -38,6 +38,11 @@ async function vendorFonts() {
     // Code: JetBrains Mono (Latin).
     { src: 'node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2', file: 'jetbrains-mono-400.woff2', family: 'Skim Mono', weight: 400, range: null },
     { src: 'node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff2', file: 'jetbrains-mono-700.woff2', family: 'Skim Mono', weight: 700, range: null },
+    // Prose sans option: Inter (official rsms/inter binaries, committed under
+    // assets/fonts/ with their OFL text — kept out of the fontsource flow on
+    // purpose so the shipped bytes are byte-identical to upstream).
+    { src: 'assets/fonts/inter-400.woff2', file: 'inter-400.woff2', family: 'Skim Sans', weight: 400, range: null },
+    { src: 'assets/fonts/inter-700.woff2', file: 'inter-700.woff2', family: 'Skim Sans', weight: 700, range: null },
   ];
   const faces = [];
   for (const f of fonts) {

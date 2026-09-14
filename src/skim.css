@@ -30,6 +30,17 @@
   --mono: "Skim Mono", "Skim Hebrew", ui-monospace, "SFMono-Regular", Menlo, Consolas, "DejaVu Sans Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
 }
 
+/* Prose typeface picker (font setting). `serif` is the default above and needs
+   no rule. `sans` uses the bundled Inter ("Skim Sans"); `system` defers to the
+   OS UI font. Hebrew still routes to Arimo first in both, and code stays
+   JetBrains Mono everywhere (see --mono). */
+html[data-skim-md="1"][data-skim-font="sans"] {
+  --body: "Skim Hebrew", "Skim Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+}
+html[data-skim-md="1"][data-skim-font="system"] {
+  --body: "Skim Hebrew", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+}
+
 html[data-skim-md="1"],
 html[data-skim-md="1"] body.skim-body {
   background: var(--skim-bg);
@@ -667,6 +678,11 @@ html.skim-lightbox-open { overflow: hidden; }
 .skim-padding-options { display: none; flex-direction: column; gap: 0.3rem; }
 .skim-padding-control.open .skim-padding-options { display: flex; }
 .skim-padding-opt.active { outline: 2px solid var(--skim-h1-fg); outline-offset: -1px; }
+/* Font picker shares the padding control's expanding-option shape exactly. */
+.skim-font-control { display: flex; flex-direction: column; gap: 0.4rem; }
+.skim-font-options { display: none; flex-direction: column; gap: 0.3rem; }
+.skim-font-control.open .skim-font-options { display: flex; }
+.skim-font-opt.active { outline: 2px solid var(--skim-h1-fg); outline-offset: -1px; }
 
 /* "Export PDF" control: the button plus a page-margin picker, so the margin is
    chosen where the export actually happens. */

@@ -14,7 +14,7 @@
     "@fontsource/heebo": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/source-serif-4": "^5.2.9",
-    "dompurify": "^3.4.11",
+    "dompurify": "^3.4.13",
     "highlight.js": "^11.11.1",
     "katex": "^0.17.0",
     "marked": "^18.0.5",

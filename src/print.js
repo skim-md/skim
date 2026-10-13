@@ -20,9 +20,9 @@ function el(tag, props = {}, children = []) {
 // their math cloned in (nested <a> unwrapped, since a link can't hold a link);
 // the common math-free case stays plain text.
 function appendHeadingContent(node, h) {
-  if (h.html && h.html.includes('skim-math')) {
+  if (h.content && h.content.querySelector('.skim-math')) {
     const tmp = el('span');
-    tmp.innerHTML = h.html;
+    tmp.append(h.content.cloneNode(true));
     tmp.querySelectorAll('a').forEach((a) => a.replaceWith(...a.childNodes));
     node.append(...tmp.childNodes);
   } else {

@@ -41,16 +41,21 @@ export function onSettingsChanged(listener) {
 }
 
 // One-time migration of the beta's per-origin localStorage settings. Runs in
-// the content script; each origin visited migrates its own legacy values, but
-// existing sync values always win.
+// the content script, but only for local files: the beta kept its settings in
+// the file:// origin's localStorage, which is the reader's own. On a web origin
+// localStorage belongs to whoever serves the page, so a hostile .md host could
+// otherwise plant values that end up in the reader's synced settings.
+// Existing sync values always win.
 //
 // The shipped beta (before the Glow -> Skim rebrand) wrote `glow-md-theme` /
 // `glow-md-density`; that's the real legacy data readers may still have. The
 // `skim-md-*` names never shipped as the *source* of truth but are read too
 // (and migrated) in case anything wrote them during the rebrand window.
 // `glow-md-*` wins when both are present.
+const isLocalDocument = () => typeof window !== 'undefined' && window.location?.protocol === 'file:';
+
 export async function migrateLocalSettings() {
-  if (!hasSync()) return;
+  if (!hasSync() || !isLocalDocument()) return;
   let theme = null, density = null;
   try {
     theme = localStorage.getItem('glow-md-theme') ?? localStorage.getItem('skim-md-theme');

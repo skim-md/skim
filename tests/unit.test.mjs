@@ -1,9 +1,9 @@
-import './setup-dom.mjs';
+import { dom } from './setup-dom.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const { protectMath, bareTextToProse, b64decode, renderMarkdown } = await import('../src/render.js');
+const { protectMath, bareTextToProse, b64decode, renderMarkdown, filterInlineStyle, isAllowedClass } = await import('../src/render.js');
 const { hasMarkdownExtension, findPlaintextPre, detectMarkdown, isHugeSource } = await import('../src/detect.js');
 const { textDirection, applyBidi } = await import('../src/bidi.js');
 
@@ -916,44 +916,72 @@ test('settings: setSetting persists and rejects unknown keys', async () => {
   await assert.rejects(() => setSetting('nope', 1), /unknown setting/);
 });
 
+// Run `fn` as if the document were a local file: legacy localStorage settings
+// are only migrated from the file:// origin (see migrateLocalSettings). jsdom
+// gives file: URLs an opaque origin with no localStorage, so a Map-backed stand-in
+// is installed for the duration.
+async function asLocalFile(fn) {
+  const origUrl = dom.window.location.href;
+  const origStorage = global.localStorage;
+  const mem = new Map();
+  dom.reconfigure({ url: 'file:///home/reader/notes.md' });
+  global.localStorage = {
+    getItem: (k) => (mem.has(k) ? mem.get(k) : null),
+    setItem: (k, v) => { mem.set(k, String(v)); },
+    removeItem: (k) => { mem.delete(k); },
+  };
+  try { return await fn(); } finally {
+    dom.reconfigure({ url: origUrl });
+    global.localStorage = origStorage;
+  }
+}
+
 test('settings: migrateLocalSettings moves the beta\'s real legacy keys (glow-md-*) once', async () => {
-  const data = installFakeChromeStorage();
-  localStorage.setItem('glow-md-theme', 'light');
-  localStorage.setItem('glow-md-density', 'big');
-  await migrateLocalSettings();
-  assert.equal(data.theme, 'light');
-  assert.equal(data.density, 'big');
-  assert.equal(localStorage.getItem('glow-md-theme'), null);
-  assert.equal(localStorage.getItem('glow-md-density'), null);
+  await asLocalFile(async () => {
+    const data = installFakeChromeStorage();
+    localStorage.setItem('glow-md-theme', 'light');
+    localStorage.setItem('glow-md-density', 'big');
+    await migrateLocalSettings();
+    assert.equal(data.theme, 'light');
+    assert.equal(data.density, 'big');
+    assert.equal(localStorage.getItem('glow-md-theme'), null);
+    assert.equal(localStorage.getItem('glow-md-density'), null);
+  });
 });
 
 test('settings: migrateLocalSettings also moves skim-md-* localStorage once', async () => {
-  const data = installFakeChromeStorage();
-  localStorage.setItem('skim-md-theme', 'light');
-  localStorage.setItem('skim-md-density', 'big');
-  await migrateLocalSettings();
-  assert.equal(data.theme, 'light');
-  assert.equal(data.density, 'big');
-  assert.equal(localStorage.getItem('skim-md-theme'), null);
-  assert.equal(localStorage.getItem('skim-md-density'), null);
+  await asLocalFile(async () => {
+    const data = installFakeChromeStorage();
+    localStorage.setItem('skim-md-theme', 'light');
+    localStorage.setItem('skim-md-density', 'big');
+    await migrateLocalSettings();
+    assert.equal(data.theme, 'light');
+    assert.equal(data.density, 'big');
+    assert.equal(localStorage.getItem('skim-md-theme'), null);
+    assert.equal(localStorage.getItem('skim-md-density'), null);
+  });
 });
 
 test('settings: migrateLocalSettings prefers glow-md-* over skim-md-* when both are present', async () => {
-  const data = installFakeChromeStorage();
-  localStorage.setItem('glow-md-theme', 'light');
-  localStorage.setItem('skim-md-theme', 'dark');
-  await migrateLocalSettings();
-  assert.equal(data.theme, 'light', 'the true legacy (glow-md-*) key should win');
-  assert.equal(localStorage.getItem('glow-md-theme'), null);
-  assert.equal(localStorage.getItem('skim-md-theme'), null);
+  await asLocalFile(async () => {
+    const data = installFakeChromeStorage();
+    localStorage.setItem('glow-md-theme', 'light');
+    localStorage.setItem('skim-md-theme', 'dark');
+    await migrateLocalSettings();
+    assert.equal(data.theme, 'light', 'the true legacy (glow-md-*) key should win');
+    assert.equal(localStorage.getItem('glow-md-theme'), null);
+    assert.equal(localStorage.getItem('skim-md-theme'), null);
+  });
 });
 
 test('settings: migration never clobbers existing sync values', async () => {
-  const data = installFakeChromeStorage({ theme: 'dark' });
-  localStorage.setItem('glow-md-theme', 'light');
-  await migrateLocalSettings();
-  assert.equal(data.theme, 'dark');
-  localStorage.removeItem('glow-md-theme');
+  await asLocalFile(async () => {
+    const data = installFakeChromeStorage({ theme: 'dark' });
+    localStorage.setItem('glow-md-theme', 'light');
+    await migrateLocalSettings();
+    assert.equal(data.theme, 'dark');
+    localStorage.removeItem('glow-md-theme');
+  });
 });
 
 test('onSettingsChanged fires only for known keys in a sync-area change, not local/unknown', async () => {
@@ -2214,4 +2242,149 @@ test('review nudge: card answers exactly once and links to the store reviews pag
   card.skimAnswer('rate');
   assert.deepEqual(answers, ['later']);
   card.remove();
+});
+
+// --- security hardening -----------------------------------------------
+
+test('renderMarkdown drops author <style> blocks, including ones smuggled inside inline <svg>', () => {
+  // DOMPurify already drops an HTML-namespace <style>; the SVG-namespace one
+  // survived the svg profile, and an inline-SVG stylesheet applies to the whole
+  // document — enough to hide or restyle Skim's own toolbar.
+  const html = renderMarkdown('<svg><style>.skim-toolbar{display:none}</style></svg>\n\nvisible text');
+  assert.ok(!/<style/i.test(html), 'author <style> must not reach the article');
+  assert.match(html, /visible text/);
+});
+
+test('renderMarkdown strips positioning/url() from inline styles but keeps harmless declarations', () => {
+  const html = renderMarkdown(
+    '<div style="position:fixed;top:0;left:0;z-index:99999;color:red;background:url(https://evil.example/p.gif)">x</div>'
+  );
+  assert.ok(!/position\s*:/i.test(html), 'position must be removed');
+  assert.ok(!/z-index/i.test(html), 'z-index must be removed');
+  assert.ok(!/url\(/i.test(html), 'url() must be removed');
+  assert.match(html, /color:\s*red/, 'harmless declarations survive');
+});
+
+test('renderMarkdown keeps the inline layout styles KaTeX needs', () => {
+  const html = renderMarkdown('$\\frac{a}{b}$ and $\\sqrt{x}$');
+  assert.match(html, /style="[^"]*height:/, 'KaTeX height styles must survive the style filter');
+  assert.match(html, /style="[^"]*top:/, 'KaTeX vlist top offsets must survive the style filter');
+});
+
+test('renderMarkdown removes Skim chrome classes from author markup but keeps renderer classes', () => {
+  const html = renderMarkdown([
+    '<div class="skim-toolbar skim-toc skim-lightbox note">x</div>',
+    '',
+    '```js',
+    'let a = 1',
+    '```',
+    '',
+    '> [!NOTE]',
+    '> hi',
+  ].join('\n'));
+  assert.ok(!/skim-toolbar|skim-toc|skim-lightbox/.test(html), 'chrome classes must be dropped');
+  assert.match(html, /class="note"/, 'ordinary author classes survive');
+  assert.match(html, /skim-code/, 'renderer code class survives');
+  assert.match(html, /skim-alert skim-alert-note/, 'renderer alert classes survive');
+});
+
+test('KaTeX \\gdef macros do not leak from one rendered document into the next', () => {
+  renderMarkdown('$\\gdef\\leakyMacro{42}$');
+  const html = renderMarkdown('$\\leakyMacro$');
+  assert.ok(!/mord">42</.test(html), 'a macro defined by a previous document must be unknown');
+});
+
+test('KaTeX \\gdef macros still persist within a single document', () => {
+  const html = renderMarkdown('$\\gdef\\sameDocMacro{42}$ then $\\sameDocMacro$');
+  assert.match(html, /mord">42</);
+});
+
+test('settings: migrateLocalSettings ignores legacy keys on web origins (page-controlled localStorage)', async () => {
+  // setup-dom runs the document at https://example.com/doc.md — a web origin whose
+  // localStorage the page author controls. Migration must not read it.
+  const data = installFakeChromeStorage();
+  localStorage.setItem('glow-md-theme', 'light');
+  localStorage.setItem('glow-md-density', 'big');
+  try {
+    await migrateLocalSettings();
+    assert.equal(data.theme, undefined, 'theme must not be migrated from a web origin');
+    assert.equal(data.density, undefined, 'density must not be migrated from a web origin');
+    // Positive control: the legacy keys are left untouched, proving the early
+    // return happened (an exception before the storage read would also leave
+    // `data` empty).
+    assert.equal(localStorage.getItem('glow-md-theme'), 'light');
+    assert.equal(localStorage.getItem('glow-md-density'), 'big');
+  } finally {
+    localStorage.removeItem('glow-md-theme');
+    localStorage.removeItem('glow-md-density');
+  }
+});
+
+test('HTML export carries a CSP that blocks scripts and sends no referrer', async () => {
+  const { buildStandaloneHtml } = await import('../src/export-html.js');
+  globalThis.chrome = { runtime: { getURL: (p) => `chrome-extension://fake/${p}` } };
+  const origFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, text: async () => '/* css */' });
+  const article = document.createElement('article');
+  article.className = 'skim markdown-body';
+  const main = document.createElement('main');
+  main.className = 'skim-main';
+  main.append(article);
+  document.body.append(main);
+  try {
+    const html = await buildStandaloneHtml(article);
+    const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/);
+    assert.ok(csp, 'export must declare a CSP');
+    assert.match(csp[1], /default-src 'none'/, 'everything not listed (scripts, frames, connect) is blocked');
+    assert.ok(!/script-src/.test(csp[1]), 'no script-src carve-out');
+    assert.match(csp[1], /img-src [^;]*(\*|https:)/, 'remote images stay viewable by design');
+    assert.match(csp[1], /img-src [^;]*file:/, 'images next to the exported file work when opened from disk');
+    assert.match(html, /<meta name="referrer" content="no-referrer">/);
+  } finally {
+    globalThis.fetch = origFetch;
+    main.remove();
+  }
+});
+
+test('class filter is case-insensitive about the skim- prefix', () => {
+  const html = renderMarkdown('<div class="SKIM-toolbar Skim-Toolbar skim-Toolbar note">x</div>');
+  assert.ok(!/toolbar/i.test(html), 'chrome classes must be dropped regardless of case');
+  assert.match(html, /class="note"/);
+});
+
+test('filterInlineStyle never re-emits a declaration whose property is not a plain identifier', () => {
+  assert.equal(filterInlineStyle('/*;*/position:fixed'), '');
+  assert.equal(filterInlineStyle('*/position:fixed'), '');
+  assert.equal(filterInlineStyle('1x:y'), '');
+  assert.equal(filterInlineStyle('--brand:red;color:blue'), '--brand:red;color:blue', 'custom properties are identifiers too');
+});
+
+test('filterInlineStyle anchors legacy-IE probes to the property, not the whole declaration', () => {
+  const out = filterInlineStyle('scroll-behavior:smooth;overscroll-behavior:none;behavior:foo;-moz-binding:bar;color:blue');
+  assert.match(out, /scroll-behavior:smooth/);
+  assert.match(out, /overscroll-behavior:none/);
+  assert.match(out, /color:blue/);
+  assert.ok(!/(^|;)behavior:/.test(out), 'behavior: itself is still dropped');
+  assert.ok(!/-moz-binding/.test(out));
+});
+
+test('the class allowlist covers every skim-* class render.js emits', async () => {
+  const src = (await readFile(new URL('../src/render.js', import.meta.url), 'utf8'))
+    .replace(/\/\*[\s\S]*?\*\//g, '')   // block comments
+    .replace(/^\s*\/\/.*$/gm, '');        // line comments (prose may name chrome classes)
+  const emitted = new Set(src.match(/skim-[a-z]+(?:-[a-z]+)*/g));
+  emitted.delete('skim-'); // never a class on its own
+  const missing = [...emitted].filter((c) => !isAllowedClass(c));
+  assert.deepEqual(missing, [], 'add these to RENDERER_CLASSES or the filter will strip renderer output');
+});
+
+test('the article is its own stacking context and the TOC sits above it', async () => {
+  // Author content can only be pulled out of the article's flow via KaTeX-style
+  // relative offsets (top/left are allowed for math); a stacking context on the
+  // article keeps such boxes under every sibling with a z-index, and the TOC
+  // needs one to be such a sibling.
+  const css = await readFile(new URL('../src/skim.css', import.meta.url), 'utf8');
+  const rule = (sel) => [...css.matchAll(new RegExp(`(^|\\n)${sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{([^}]*)\\}`, 'g'))].map((m) => m[2]).join(';');
+  assert.match(rule('.skim-main'), /isolation:\s*isolate/, '.skim-main must be a stacking context');
+  assert.match(rule('.skim-toc'), /z-index:\s*[1-9]/, '.skim-toc must carry a positive z-index');
 });

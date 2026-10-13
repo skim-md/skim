@@ -62,6 +62,22 @@ function safeFilename(title) {
   return (base || 'document') + '.html';
 }
 
+// The export is a static page: no scripts, frames, forms or fetches, ever. Its
+// own CSS and fonts are inlined (style-src 'unsafe-inline', font-src data:), and
+// images/media the document referenced stay viewable from any host — but with
+// no referrer, so opening the file leaks nothing about where it came from.
+const EXPORT_CSP = [
+  "default-src 'none'",
+  // `*` already admits the document's own scheme, but say file: outright so
+  // images next to the exported file work when it is opened from disk.
+  'img-src * data: blob: file:',
+  'media-src * data: blob: file:',
+  "style-src 'unsafe-inline'",
+  'font-src data:',
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+
 // Build the standalone HTML string for the current document.
 export async function buildStandaloneHtml(article) {
   const main = article.closest('.skim-main') || article;
@@ -100,6 +116,8 @@ export async function buildStandaloneHtml(article) {
 <html lang="${escapeHtml(root.lang || 'en')}" data-skim-md="1" data-theme="${escapeHtml(theme)}"${carried}>
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="${EXPORT_CSP}">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Skim markdown viewer">
 <title>${escapeHtml(title)}</title>

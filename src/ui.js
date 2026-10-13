@@ -28,11 +28,13 @@ export function collectHeadings(article) {
     if (custom) { h.id = custom; used.add(custom); }
     else if (!h.id) h.id = slugify(h.textContent, used);
     else used.add(h.id);
-    // Capture the rendered HTML too (it holds KaTeX math) so the TOC can show
-    // math instead of textContent's garbled MathML+HTML concatenation. Safe to
-    // reuse: this is already-sanitized article markup, captured before copy
-    // buttons are attached.
-    entries.push({ level: Number(h.tagName[1]), text: h.textContent, id: h.id, html: h.innerHTML });
+    // Capture the rendered content too (it holds KaTeX math) so the TOC can
+    // show math instead of textContent's garbled MathML+HTML concatenation.
+    // Cloned as DOM nodes, not serialized: a string would be re-parsed by
+    // innerHTML later. (Copy buttons are already attached by now, but none
+    // of them lands inside a heading — code buttons target pre.skim-code and
+    // math copy only sets a title attribute.)
+    entries.push({ level: Number(h.tagName[1]), text: h.textContent, id: h.id, content: cloneChildren(h) });
   });
   return entries;
 }
@@ -58,13 +60,20 @@ function el(tag, props = {}, children = []) {
   return node;
 }
 
+// Deep-clone an element's children into a DocumentFragment.
+export function cloneChildren(node) {
+  const frag = document.createDocumentFragment();
+  for (const child of node.childNodes) frag.append(child.cloneNode(true));
+  return frag;
+}
+
 // Fill a TOC link. Headings with math get their rendered KaTeX cloned in (with
 // any nested <a> unwrapped, since a link can't contain a link); the common
 // math-free case stays plain text.
 function setTocLinkContent(link, h) {
-  if (h.html && h.html.includes('skim-math')) {
+  if (h.content && h.content.querySelector('.skim-math')) {
     const tmp = el('span');
-    tmp.innerHTML = h.html;
+    tmp.append(h.content.cloneNode(true));
     tmp.querySelectorAll('a').forEach((a) => a.replaceWith(...a.childNodes));
     link.append(...tmp.childNodes);
   } else {

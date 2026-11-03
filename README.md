@@ -109,6 +109,21 @@ To read local `.md` files, the popup walks you through the one Chrome switch it 
 </details>
 
 <details>
+<summary><b>Quiz skill for Claude Code and other agents</b></summary>
+
+<br>
+
+Ask your agent to "add a quiz to these notes" and it writes an interactive quiz into the markdown file, hidden in an HTML comment. Every other viewer shows a normal document; Skim shows the quiz. The skill is in [`skills/skim-markdown-quiz/SKILL.md`](skills/skim-markdown-quiz/SKILL.md), and the full format is the [Skim Quiz Protocol](SKIM-QUIZ-PROTOCOL.md).
+
+```sh
+mkdir -p ~/.claude/skills/skim-markdown-quiz
+curl -fsSL https://raw.githubusercontent.com/skim-md/skim/main/skills/skim-markdown-quiz/SKILL.md \
+  -o ~/.claude/skills/skim-markdown-quiz/SKILL.md
+```
+
+</details>
+
+<details>
 <summary><b>Everything Skim does</b></summary>
 
 <br>

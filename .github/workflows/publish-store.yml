@@ -1,174 +1,193 @@
-name: Publish to Chrome Web Store
+name: Publish to stores
 
-# Uploads a build to the Chrome Web Store and submits it for review.
+# Builds once, then submits the same package to the Chrome Web Store and to
+# Firefox Add-ons (AMO). Runs on a v* tag, or by hand from the Actions tab.
 #
-# Triggered by pushing a v* tag (the same tag that produces the GitHub Release
-# asset in ci.yml), or by hand from the Actions tab. It is a no-op until the
-# four repository secrets below exist, so tagging stays safe before setup.
+# Secrets live in the `stores` environment (Settings > Environments > stores),
+# which should have a required reviewer: every submission waits for one click.
+#   CWS_SA_KEY        service-account JSON key (Chrome Web Store API enabled,
+#                     account added in the CWS dashboard under Account)
+#   CWS_PUBLISHER_ID  publisher id from the CWS dashboard
+#   CWS_EXTENSION_ID  feeikgjlekgeepjljmnifkbnpcnflcmd
+#   AMO_JWT_ISSUER    addons.mozilla.org/developers/addon/api/key/
+#   AMO_JWT_SECRET
+# A store whose secrets are missing is skipped with a notice, so tagging is
+# always safe.
 #
-# One-time setup (secrets live in Settings > Secrets and variables > Actions):
-#   CWS_EXTENSION_ID   the id in the store URL, e.g. feeikgjlekgee...
-#   CWS_CLIENT_ID      OAuth client id  (Google Cloud > Credentials, "Desktop app")
-#   CWS_CLIENT_SECRET  OAuth client secret
-#   CWS_REFRESH_TOKEN  refresh token for scope
-#                      https://www.googleapis.com/auth/chromewebstore
-# The Chrome Web Store API must be enabled in that Google Cloud project, and
-# the OAuth client must belong to the same Google account that owns the store
-# listing. See PUBLISHING notes in the private repo for the click-by-click.
-#
-# Talks to the API with plain curl on purpose: no third-party action gets to
-# see the publishing credentials for the extension.
+# Only the build job runs repository and dependency code, and it never sees a
+# secret. The publish jobs talk to the stores with curl and a pinned web-ext.
 
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
     inputs:
-      target:
-        description: 'Who receives it once review passes'
+      stores:
+        description: 'Which stores'
         type: choice
-        default: default
-        options: [default, trustedTesters]
+        default: both
+        options: [both, chrome, firefox]
       publish:
-        description: 'Submit for review after upload (uncheck to only upload a draft)'
+        description: 'Submit for review (unchecked: Chrome upload stays a draft, Firefox is skipped)'
         type: boolean
         default: true
 
+permissions:
+  contents: read
+
 jobs:
-  chrome-web-store:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.pack.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - name: Check credentials are configured
-        id: creds
-        env:
-          ID: ${{ secrets.CWS_EXTENSION_ID }}
-          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
-        run: |
-          missing=""
-          for v in ID CLIENT_ID CLIENT_SECRET REFRESH_TOKEN; do
-            [ -n "${!v}" ] || missing="$missing CWS_$v"
-          done
-          if [ -z "$missing" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "ready=false" >> "$GITHUB_OUTPUT"
-          # Asked for by hand: the person is standing right there, so say no
-          # loudly. On a tag push, skip quietly instead of painting the release
-          # red for a repo that has not been wired to the store yet.
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "::error::Store credentials not set. Missing secrets:$missing"
-            echo "Add them in Settings > Secrets and variables > Actions, then re-run."
-            exit 1
-          fi
-          echo "::notice::Skipping store upload, secrets not configured:$missing"
-
-      - uses: actions/setup-node@v4
-        if: steps.creds.outputs.ready == 'true'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
-          cache: 'npm'
+          package-manager-cache: false
 
       - run: npm ci
-        if: steps.creds.outputs.ready == 'true'
       - run: npm test
-        if: steps.creds.outputs.ready == 'true'
       - run: npm run build
-        if: steps.creds.outputs.ready == 'true'
       - run: npm run size
-        if: steps.creds.outputs.ready == 'true'
 
-      - name: Package extension
-        if: steps.creds.outputs.ready == 'true'
+      - name: Package
         id: pack
-        run: |
-          VERSION="$(node -p "require('./manifest.json').version")"
-          ZIP="skim-${VERSION}.zip"
-          zip -qr "$ZIP" \
-            manifest.json SKIM-QUIZ-PROTOCOL.md src dist vendor assets _locales examples LICENSE \
-            -x '*/.DS_Store'
-          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          ls -lh "$ZIP"
-
-      - name: Refuse to publish a version that is already live
-        if: steps.creds.outputs.ready == 'true'
         env:
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-          VERSION: ${{ steps.pack.outputs.version }}
         run: |
-          # A tag must match manifest.json, or the store rejects the upload
-          # with a confusing "version already exists" hours later.
+          set -euo pipefail
+          VERSION="$(node -p "require('./manifest.json').version")"
+          # The store rejects a version it already has, hours later and with a
+          # confusing message. A tag that disagrees with manifest.json is the
+          # usual cause, so stop here instead.
           if [ -n "$TAG" ] && [ "${TAG#v}" != "$VERSION" ]; then
             echo "::error::tag $TAG does not match manifest version $VERSION"
             exit 1
           fi
+          mkdir -p out
+          zip -qr "out/skim-${VERSION}.zip" \
+            manifest.json SKIM-QUIZ-PROTOCOL.md src dist vendor assets _locales examples LICENSE \
+            -x '*/.DS_Store'
+          # AMO reviews the readable source behind the bundles in dist/.
+          git archive --format zip -o "out/skim-${VERSION}-source.zip" HEAD
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          ls -lh out
 
-      - name: Upload and publish
-        if: steps.creds.outputs.ready == 'true'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: packages
+          path: out/
+          if-no-files-found: error
+
+  chrome:
+    needs: build
+    if: github.event_name != 'workflow_dispatch' || inputs.stores != 'firefox'
+    runs-on: ubuntu-latest
+    environment: stores
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: packages
+          path: out
+
+      - name: Upload and submit
         env:
+          SA_KEY: ${{ secrets.CWS_SA_KEY }}
+          PUB: ${{ secrets.CWS_PUBLISHER_ID }}
           ID: ${{ secrets.CWS_EXTENSION_ID }}
-          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
-          ZIP: ${{ steps.pack.outputs.zip }}
-          TARGET: ${{ inputs.target || 'default' }}
-          DO_PUBLISH: ${{ github.event_name != 'workflow_dispatch' && 'true' || inputs.publish }}
+          VERSION: ${{ needs.build.outputs.version }}
+          DO_PUBLISH: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
         run: |
           set -euo pipefail
-
-          echo "Exchanging the refresh token for an access token"
-          TOKEN=$(curl -sS -X POST https://oauth2.googleapis.com/token \
-            -d "client_id=$CLIENT_ID" \
-            -d "client_secret=$CLIENT_SECRET" \
-            -d "refresh_token=$REFRESH_TOKEN" \
-            -d "grant_type=refresh_token" | jq -r '.access_token // empty')
-          if [ -z "$TOKEN" ]; then
-            echo "::error::could not get an access token (check CWS_CLIENT_* and CWS_REFRESH_TOKEN)"
-            exit 1
-          fi
-
-          echo "Uploading $ZIP to item $ID"
-          UPLOAD=$(curl -sS -X PUT \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "x-goog-api-version: 2" \
-            -T "$ZIP" \
-            "https://www.googleapis.com/upload/chromewebstore/v1.1/items/$ID?uploadType=media")
-          echo "$UPLOAD" | jq .
-          STATE=$(echo "$UPLOAD" | jq -r '.uploadState // "UNKNOWN"')
-          if [ "$STATE" != "SUCCESS" ]; then
-            echo "::error::upload failed ($STATE)"
-            exit 1
-          fi
-
-          if [ "$DO_PUBLISH" != "true" ]; then
-            echo "Uploaded as a draft. Publish skipped by request."
+          if [ -z "$SA_KEY" ] || [ -z "$PUB" ] || [ -z "$ID" ]; then
+            echo "::notice::Chrome Web Store secrets not set, skipping."
             exit 0
           fi
+          ZIP="out/skim-${VERSION}.zip"
 
-          echo "Submitting for review, audience: $TARGET"
-          PUBLISH=$(curl -sS -X POST \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "x-goog-api-version: 2" \
-            -H "Content-Length: 0" \
-            "https://www.googleapis.com/chromewebstore/v1.1/items/$ID/publish?publishTarget=$TARGET")
-          echo "$PUBLISH" | jq .
-          # status is an array, e.g. ["OK"] or ["ITEM_NOT_UPDATABLE"].
-          if echo "$PUBLISH" | jq -e '.status | index("OK")' >/dev/null; then
-            echo "Submitted. Google review usually takes a few hours to a few days."
-          else
-            echo "::error::publish call did not return OK"
-            exit 1
+          # Service-account access token: a JWT signed with the account's key,
+          # exchanged at Google's token endpoint. No third-party code involved.
+          b64() { openssl base64 -A | tr '+/' '-_' | tr -d '='; }
+          EMAIL=$(jq -r .client_email <<<"$SA_KEY")
+          jq -r .private_key <<<"$SA_KEY" > key.pem
+          NOW=$(date +%s)
+          HEAD=$(printf '{"alg":"RS256","typ":"JWT"}' | b64)
+          CLAIMS=$(jq -cn --arg iss "$EMAIL" --argjson iat "$NOW" \
+            '{iss:$iss, scope:"https://www.googleapis.com/auth/chromewebstore", aud:"https://oauth2.googleapis.com/token", iat:$iat, exp:($iat+600)}' | b64)
+          SIG=$(printf '%s.%s' "$HEAD" "$CLAIMS" | openssl dgst -sha256 -sign key.pem | b64)
+          rm -f key.pem
+          TOKEN=$(curl -sS https://oauth2.googleapis.com/token \
+            -d grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer \
+            -d "assertion=$HEAD.$CLAIMS.$SIG" | jq -r '.access_token // empty')
+          [ -n "$TOKEN" ] || { echo "::error::no access token (check CWS_SA_KEY and that the API is enabled)"; exit 1; }
+          echo "::add-mask::$TOKEN"
+
+          API=https://chromewebstore.googleapis.com
+          echo "Uploading $ZIP"
+          UP=$(curl -sS -X POST -H "Authorization: Bearer $TOKEN" -T "$ZIP" \
+            "$API/upload/v2/publishers/$PUB/items/$ID:upload")
+          echo "$UP" | jq .
+          STATE=$(jq -r '.uploadState // "UNKNOWN"' <<<"$UP")
+          for _ in $(seq 1 20); do
+            case "$STATE" in
+              *PROGRESS*) sleep 15
+                STATE=$(curl -sS -H "Authorization: Bearer $TOKEN" \
+                  "$API/v2/publishers/$PUB/items/$ID:fetchStatus" | jq -r '.lastAsyncUploadState // .uploadState // "UNKNOWN"') ;;
+              *) break ;;
+            esac
+          done
+          case "$STATE" in
+            SUCCESS|SUCCEEDED) ;;
+            *) echo "::error::upload ended in state $STATE"; exit 1 ;;
+          esac
+
+          if [ "$DO_PUBLISH" != "true" ]; then
+            echo "Uploaded as a draft; not submitted."
+            exit 0
           fi
+          CODE=$(curl -sS -o publish.json -w '%{http_code}' -X POST -H "Authorization: Bearer $TOKEN" \
+            -H 'Content-Length: 0' "$API/v2/publishers/$PUB/items/$ID:publish")
+          jq . publish.json
+          [ "$CODE" = 200 ] || { echo "::error::publish returned HTTP $CODE"; exit 1; }
+          echo "### Chrome Web Store: $VERSION submitted for review" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Summary
-        if: steps.creds.outputs.ready == 'true'
+  firefox:
+    needs: build
+    if: (github.event_name != 'workflow_dispatch' || (inputs.stores != 'chrome' && inputs.publish))
+    runs-on: ubuntu-latest
+    environment: stores
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: packages
+          path: out
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Sign and submit to AMO
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+          VERSION: ${{ needs.build.outputs.version }}
         run: |
-          echo "### Chrome Web Store" >> "$GITHUB_STEP_SUMMARY"
-          echo "Version: ${{ steps.pack.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Package: ${{ steps.pack.outputs.zip }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Listing: https://chromewebstore.google.com/detail/${{ secrets.CWS_EXTENSION_ID }}" >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          if [ -z "$WEB_EXT_API_KEY" ] || [ -z "$WEB_EXT_API_SECRET" ]; then
+            echo "::notice::AMO secrets not set, skipping."
+            exit 0
+          fi
+          mkdir stage && unzip -q "out/skim-${VERSION}.zip" -d stage
+          npx --yes web-ext@10.8.0 sign \
+            --source-dir stage \
+            --artifacts-dir web-ext-artifacts \
+            --channel listed \
+            --upload-source-code "out/skim-${VERSION}-source.zip" \
+            --approval-timeout 0
+          echo "### Firefox Add-ons: $VERSION submitted for review" >> "$GITHUB_STEP_SUMMARY"

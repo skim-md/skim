@@ -37,7 +37,7 @@
     <line x1="64" y1="228" x2="1216" y2="228" stroke="#232838" stroke-width="1"/>
     <use xlink:href="#skimicon" x="88" y="190"/>
     <rect x="124" y="188" width="430" height="28" rx="14" fill="#161b26"/>
-    <text x="142" y="207" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">file:///home/nir/notes/linear-algebra.md</text>
+    <text x="142" y="207" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">file:///home/dev/notes/linear-algebra.md</text>
     <g fill="#4a5164">
       <circle cx="1186" cy="196" r="2.2"/><circle cx="1186" cy="203" r="2.2"/><circle cx="1186" cy="210" r="2.2"/>
     </g>

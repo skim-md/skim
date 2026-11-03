@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5674dd"/>
+      <stop offset="1" stop-color="#8aabff"/>
+    </linearGradient>
+    <filter id="iconshadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0d1017" flood-opacity="0.35"/>
+    </filter>
+    <g id="skimicon">
+      <rect width="24" height="24" rx="5.5" fill="#0d1017" stroke="#2c3344" stroke-width="1"/>
+      <rect x="4.5" y="6.2" width="15" height="2.1" rx="1.05" fill="#e8eaf0"/>
+      <rect x="4.5" y="10.9" width="10.5" height="2.1" rx="1.05" fill="#7aa2ff"/>
+      <rect x="4.5" y="15.6" width="6.4" height="2.1" rx="1.05" fill="#4a5164"/>
+      <circle cx="18.4" cy="16.7" r="1.4" fill="#ffd866"/>
+    </g>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+
+  <!-- Top: brand -->
+  <g filter="url(#iconshadow)" transform="translate(404 210) scale(3.4)"><use xlink:href="#skimicon"/></g>
+  <text x="510" y="272" font-family="Inter, system-ui, sans-serif" font-size="72" font-weight="700" fill="#ffffff" letter-spacing="-1.5">Skim</text>
+
+
+  <!-- Video slot: 1080x846 band centered at y=960 (occupies 537..1383), left empty -->
+
+  <!-- Below the video: one-liner -->
+  <text x="540" y="1478" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="34" fill="#eef2ff">The free markdown viewer for your browser.</text>
+
+  <!-- Feature chips -->
+  <g font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="26" fill="#dbe4ff" text-anchor="middle">
+    <rect x="192" y="1524" width="230" height="58" rx="29" fill="#0d1017" opacity="0.25"/>
+    <text x="307" y="1562">live reload</text>
+    <rect x="438" y="1524" width="262" height="58" rx="29" fill="#0d1017" opacity="0.25"/>
+    <text x="569" y="1562">math + charts</text>
+    <rect x="716" y="1524" width="172" height="58" rx="29" fill="#0d1017" opacity="0.25"/>
+    <text x="802" y="1562">quizzes</text>
+  </g>
+
+  <!-- Bottom: site -->
+  <text x="540" y="1750" text-anchor="middle" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="34" fill="#ffffff" opacity="0.95">skim.md</text>
+  <text x="540" y="1800" text-anchor="middle" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="24" fill="#dbe4ff" opacity="0.85">free &#183; open source &#183; no account</text>
+</svg>

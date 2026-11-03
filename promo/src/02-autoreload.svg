@@ -39,7 +39,7 @@
     <circle cx="94" cy="222" r="6" fill="#e0655f"/>
     <circle cx="116" cy="222" r="6" fill="#e0b34e"/>
     <circle cx="138" cy="222" r="6" fill="#57b56a"/>
-    <text x="324" y="227" text-anchor="middle" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">nir@dev: ~/project</text>
+    <text x="324" y="227" text-anchor="middle" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="13" fill="#9aa3b8">you@dev: ~/project</text>
 
     <!-- Terminal body -->
     <g font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="15">

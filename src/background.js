@@ -27,6 +27,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 chrome.runtime.onStartup.addListener(refreshBadge);
 
+// After an uninstall the browser opens this page: one optional question about
+// why, answered (or not) by the reader. Nothing is sent by the extension.
+chrome.runtime.setUninstallURL?.('https://skim.md/bye/')?.catch?.(() => {});
+
 // When the user flips "Allow access to file URLs", Chrome restarts the
 // extension — so a once-per-lifetime sweep here catches the grant no matter
 // where it was made (our walkthrough, the popup path, or chrome://extensions

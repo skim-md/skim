@@ -1,5 +1,7 @@
 import { getSettings, setSetting } from '../settings.js';
 import { isFileAccessAllowed } from '../file-access-check.js';
+import { isFirefox, requestFileAccess } from '../browser-env.js';
+import { STORE_REVIEW_URL } from '../store.js';
 import { openClipboardViewer } from '../clipboard/open-clipboard.js';
 
 const $ = (id) => document.getElementById(id);
@@ -55,21 +57,28 @@ async function init() {
     // The popup dresses like the viewer: same palette, same dark/light choice.
     applyTheme(settings.theme);
 
+    const firefox = isFirefox();
+    if ($('rate-link')) $('rate-link').href = STORE_REVIEW_URL;
+    if (firefox && $('browser-name')) $('browser-name').textContent = 'Firefox';
+
     if (!allowed && !(await hasRenderedFileTab())) {
       $('file-cta').hidden = false;
-      if (tab?.url?.startsWith('file:') && MD_FILE_URL.test(tab.url)) {
+      if (firefox) {
+        // Firefox: file access is a permission the reader grants from a prompt,
+        // not a switch on a settings page.
+        $('file-cta-msg').innerHTML = 'To read <code>.md</code> files from your computer, Firefox needs your OK once.';
+        $('file-cta').querySelector('ol')?.remove();
+        $('open-settings').textContent = 'Allow local files';
+      } else if (tab?.url?.startsWith('file:') && MD_FILE_URL.test(tab.url)) {
         $('file-cta-msg').innerHTML = 'This tab <em>is</em> a markdown file. Flip one switch and Skim will render it beautifully:';
       }
       $('open-settings').addEventListener('click', async () => {
-        // Deep-link straight to Skim's card on chrome://extensions, scrolled to
-        // the file-URLs switch. Awaited BEFORE window.close(): closing tears
-        // this context down and an un-awaited create can vanish with it (the
-        // "button does nothing" bug). If a build refuses chrome:// URLs from
-        // tabs.create, fall back to the packaged walkthrough tab.
-        try {
-          await chrome.tabs.create({ url: `chrome://extensions/?id=${chrome.runtime.id}#:~:text=Allow%20access%20to%20file%20URLs` });
-        } catch {
-          await chrome.tabs.create({ url: chrome.runtime.getURL('src/file-access/file-access.html') }).catch(() => {});
+        // Awaited BEFORE window.close(): closing tears this context down and an
+        // un-awaited call can vanish with it (the "button does nothing" bug).
+        const granted = await requestFileAccess();
+        if (granted) {
+          chrome.runtime.sendMessage({ type: 'skim-refresh-badge' }).catch(() => {});
+          if (tab?.id != null && MD_FILE_URL.test(tab.url || '')) await chrome.tabs.reload(tab.id).catch(() => {});
         }
         window.close();
       });

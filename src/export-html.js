@@ -132,6 +132,7 @@ async function runExport(article, btn) {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
+    try { document.dispatchEvent(new document.defaultView.Event('skim:success')); } catch { /* no DOM events here */ }
   } catch (e) {
     console.error('Skim: HTML export failed', e);
   } finally {

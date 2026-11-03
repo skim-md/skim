@@ -1,21 +1,24 @@
-// Review nudge: a quiet, one-line ask to rate Skim on the Chrome Web Store.
+// Review nudge: a quiet, one-line ask to rate Skim on its store (Chrome Web
+// Store or addons.mozilla.org, whichever this browser installs from).
 //
 // Etiquette, so it never reads as nagging:
 //   * Earned, not scheduled. Nothing shows until the reader has rendered a dozen
 //     documents across at least a few days: proof they actually use Skim.
-//   * Never on arrival. The card slides in only after ~25 s of the tab being
-//     visible, so it never competes with the first look at a document.
+//   * Asked at a good moment. Right after something worked (a PDF or HTML
+//     export, a finished quiz: the page fires 'skim:success'), or else after
+//     ~25 s of the tab being visible. Never on arrival.
 //   * Never modal, never focus-stealing. A corner card; reading continues.
 //   * Every answer is final or long-lived. "Rate" and the close mark done for
 //     good (synced across devices). "Later" (or ignoring it) snoozes for weeks
 //     AND dozens more renders. At most 3 showings per install, ever.
 //   * Auto-reload re-renders do not count as uses; one page load = one render.
-import { STORE_REVIEW_URL } from './store.js';
+import { STORE_REVIEW_URL, ISSUES_URL } from './store.js';
 
 export const NUDGE = {
-  minRenders: 12,                       // documents rendered before the first ask
-  minAgeMs: 5 * 24 * 3600 * 1000,       // ... and at least 5 days since the first render
+  minRenders: 8,                        // documents rendered before the first ask
+  minAgeMs: 3 * 24 * 3600 * 1000,       // ... and at least 3 days since the first render
   delayMs: 25 * 1000,                   // visible reading time before the card appears
+  successDelayMs: 1500,                 // ... or this long after a 'skim:success'
   autoHideMs: 30 * 1000,                // ignored card folds itself away (= "Later")
   snoozeMs: 45 * 24 * 3600 * 1000,      // "Later": no ask for 45 days ...
   snoozeRenders: 40,                    // ... and 40 more renders, whichever is later
@@ -95,6 +98,9 @@ function el(tag, props = {}, children = []) {
 }
 
 // Build the card. `onAnswer(kind)` is called once with 'rate' | 'later' | 'never'.
+// "Something wrong?" opens a new GitHub issue and counts as 'later': the reader
+// may well want to rate once it is fixed. It sits beside Rate, never instead of
+// it, so nobody is steered away from the store.
 export function buildReviewCard(renders, onAnswer) {
   const card = el('aside', { className: 'skim-review', role: 'status' });
   card.setAttribute('aria-label', 'Rate Skim');
@@ -113,7 +119,7 @@ export function buildReviewCard(renders, onAnswer) {
 
   const text = el('p', { className: 'skim-review-text' }, [
     el('strong', { textContent: `${renders} documents` }),
-    ' rendered with Skim. Is it earning its place?',
+    ' read with Skim. If it has been useful, a rating takes ten seconds and helps others find it.',
   ]);
 
   const rate = el('a', {
@@ -124,7 +130,13 @@ export function buildReviewCard(renders, onAnswer) {
   const later = el('button', { className: 'skim-review-later', type: 'button', textContent: 'Later' });
   later.addEventListener('click', () => answer('later'));
 
-  card.append(close, text, el('div', { className: 'skim-review-actions' }, [rate, later]));
+  const issue = el('a', {
+    className: 'skim-review-issue', href: ISSUES_URL, target: '_blank', rel: 'noopener noreferrer',
+    textContent: 'Something wrong?',
+  });
+  issue.addEventListener('click', () => answer('later'));
+
+  card.append(close, text, el('div', { className: 'skim-review-actions' }, [rate, later, issue]));
   card.skimAnswer = answer;
   return card;
 }
@@ -149,6 +161,14 @@ function afterVisible(ms) {
   });
 }
 
+// Resolve after 'skim:success' fires on this page, plus a beat so the card
+// never lands on top of the thing that just finished.
+function afterSuccess(ms) {
+  return new Promise((resolve) => {
+    document.addEventListener('skim:success', () => setTimeout(resolve, ms), { once: true });
+  });
+}
+
 // Entry point, called once per page load after the document has rendered.
 // Never throws: a storage hiccup must never affect the reader.
 export async function setupReviewNudge() {
@@ -157,7 +177,7 @@ export async function setupReviewNudge() {
     await saveState(state);
     if (!shouldOffer(state, Date.now())) return;
 
-    await afterVisible(NUDGE.delayMs);
+    await Promise.race([afterVisible(NUDGE.delayMs), afterSuccess(NUDGE.successDelayMs)]);
     // Re-read: another tab may have answered while we waited.
     state = await loadState();
     if (!shouldOffer(state, Date.now())) return;

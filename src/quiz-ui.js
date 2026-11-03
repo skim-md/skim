@@ -670,6 +670,7 @@ export function buildQuizControl({ quizzes, container, article }) {
     const body = el('div', { className: 'skim-quiz-body skim-quiz-scorecard' });
     const big = el('div', { className: 'skim-quiz-score-big', textContent: '0%' });
     const target = Math.round(result.fraction * 100);
+    try { document.dispatchEvent(new document.defaultView.Event('skim:success')); } catch { /* no DOM events here */ }
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reduced) big.textContent = `${target}%`;
     else {

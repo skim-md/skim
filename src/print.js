@@ -194,6 +194,7 @@ function runPrint(article, headings) {
       else html.removeAttribute('data-theme');
     }
     window.removeEventListener('afterprint', cleanup);
+    try { document.dispatchEvent(new document.defaultView.Event('skim:success')); } catch { /* no DOM events here */ }
   };
   window.addEventListener('afterprint', cleanup);
 

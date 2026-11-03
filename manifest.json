@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
@@ -11,7 +11,15 @@
   },
   "background": {
     "service_worker": "src/background.js",
+    "scripts": ["src/background.js"],
     "type": "module"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "skim@mathematic.ai",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
   },
   "permissions": ["storage", "activeTab", "scripting", "tabs", "clipboardRead"],
   "host_permissions": ["file:///*"],

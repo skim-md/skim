@@ -4,12 +4,11 @@
 // the moment access is granted we reload that file and close this tab,
 // one better than asking the user to reload it themselves.
 import { isFileAccessAllowed } from '../file-access-check.js';
+import { isFirefox, requestFileAccess } from '../browser-env.js';
 
 const params = new URLSearchParams(location.hash.slice(1));
 const sourceTabId = Number(params.get('tab'));
 
-const SETTINGS_URL =
-  `chrome://extensions/?id=${chrome.runtime.id}#:~:text=Allow%20access%20to%20file%20URLs`;
 
 async function closeSelf() {
   try {
@@ -41,9 +40,16 @@ function watchAccess() {
   tick();
 }
 
-document.getElementById('open-settings').addEventListener('click', () => {
-  chrome.tabs.create({ url: SETTINGS_URL });
-});
+// Firefox: no switch to show. The same button raises Firefox's permission
+// prompt, and the watcher below picks up the grant.
+if (isFirefox()) {
+  document.querySelector('h1').textContent = 'To read local markdown files with Skim, allow it to read files on your computer. This file then reloads by itself.';
+  document.querySelector('.toggle-row span').textContent = 'Access your data for file:///*';
+  document.getElementById('status').textContent = 'Waiting for your OK…';
+  document.getElementById('open-settings').textContent = 'Allow local files';
+}
+
+document.getElementById('open-settings').addEventListener('click', () => { requestFileAccess(); });
 
 document.getElementById('no-thanks').addEventListener('click', async () => {
   try { await chrome.storage.sync.set({ fileCtaDismissed: true }); } catch { /* ignore */ }

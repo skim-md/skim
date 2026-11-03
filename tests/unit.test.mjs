@@ -202,6 +202,25 @@ test('protectMath leaves bare currency alone', () => {
   assert.equal(math.length, 0);
 });
 
+test('protectMath leaves price ranges and prefixed currency alone (issue #10)', () => {
+  for (const src of [
+    'Range: $5-$10 today',
+    'Costs $5/$10 per seat',
+    'Paid US$5 and US$10.',
+    'I paid $20.\n\nLater the total was 30$ ok',
+    'Price: $$ cheap\n\nAnd $$$ pricey',
+  ]) {
+    const { text, math } = protectMath(src);
+    assert.equal(math.length, 0, src);
+    assert.equal(text, src);
+  }
+});
+
+test('protectMath still finds math next to currency-like text', () => {
+  const { math } = protectMath('Pay $5 if $x>2$, and in CJK 函数$f(x)$ too; $a$-$b$.');
+  assert.deepEqual(math.map((m) => m.source), ['x>2', 'f(x)', 'a', 'b']);
+});
+
 test('protectMath ignores escaped dollar signs', () => {
   const { math } = protectMath('Literally \\$x\\$ here.');
   assert.equal(math.length, 0);
@@ -2166,7 +2185,7 @@ test('applyBidi isolates a Hebrew parenthetical inside English prose', () => {
 const nudge = await import('../src/review-nudge.js');
 const DAY = 24 * 3600 * 1000;
 
-test('review nudge: silent until a dozen renders spread over several days', () => {
+test('review nudge: silent until 8 renders spread over a few days', () => {
   const t0 = 1_000_000;
   let s = { ...nudge.EMPTY_STATE };
   for (let i = 0; i < 30; i++) s = nudge.recordRender(s, t0 + i);
@@ -2174,11 +2193,13 @@ test('review nudge: silent until a dozen renders spread over several days', () =
   assert.equal(s.firstRender, t0);
   // Plenty of renders, but all today: still too early.
   assert.equal(nudge.shouldOffer(s, t0 + DAY), false);
-  assert.equal(nudge.shouldOffer(s, t0 + 6 * DAY), true);
+  assert.equal(nudge.shouldOffer(s, t0 + 4 * DAY), true);
   // Old install, too few renders: also no.
   let few = { ...nudge.EMPTY_STATE };
   for (let i = 0; i < 5; i++) few = nudge.recordRender(few, t0);
   assert.equal(nudge.shouldOffer(few, t0 + 30 * DAY), false);
+  for (let i = 0; i < 3; i++) few = nudge.recordRender(few, t0);
+  assert.equal(nudge.shouldOffer(few, t0 + 30 * DAY), true);
 });
 
 test('review nudge: "later" snoozes by both time and renders; done is forever; 3 showings max', () => {
@@ -2209,9 +2230,23 @@ test('review nudge: card answers exactly once and links to the store reviews pag
   document.body.append(card);
   assert.match(card.querySelector('.skim-review-rate').href, /chromewebstore\.google\.com\/.*\/reviews$/);
   assert.match(card.textContent, /14 documents/);
+  assert.match(card.querySelector('.skim-review-issue').href, /github\.com\/skim-md\/skim\/issues\/new$/);
   card.querySelector('.skim-review-later').click();
   card.querySelector('.skim-review-close').click();
   card.skimAnswer('rate');
   assert.deepEqual(answers, ['later']);
   card.remove();
+});
+
+test('store links follow the browser: AMO on Firefox, Chrome Web Store elsewhere', async () => {
+  const chromeStore = await import('../src/store.js?chrome');
+  assert.match(chromeStore.STORE_REVIEW_URL, /chromewebstore\.google\.com\/.*\/reviews$/);
+  const prev = globalThis.chrome;
+  globalThis.chrome = { runtime: { getURL: (p) => `moz-extension://abc/${p}` } };
+  try {
+    const ff = await import('../src/store.js?firefox');
+    assert.equal(ff.STORE_REVIEW_URL, 'https://addons.mozilla.org/firefox/addon/skim-markdown-viewer-reader/reviews/');
+  } finally {
+    globalThis.chrome = prev;
+  }
 });

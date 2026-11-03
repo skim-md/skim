@@ -1,5 +1,6 @@
 import { renderMarkdown } from '../render.js';
 import { isFileAccessAllowed } from '../file-access-check.js';
+import { isFirefox, requestFileAccess } from '../browser-env.js';
 
 async function watchFileAccess() {
   const status = document.getElementById('file-status');
@@ -20,9 +21,15 @@ async function watchFileAccess() {
   tick();
 }
 
-document.getElementById('open-settings').addEventListener('click', () => {
-  chrome.tabs.create({ url: `chrome://extensions/?id=${chrome.runtime.id}` });
-});
+// Firefox has no "Allow access to file URLs" switch: local files need a host
+// permission, which the reader grants from a prompt behind this same button.
+if (isFirefox()) {
+  document.getElementById('file-intro').textContent = 'Firefox asks once before an add-on may read files on your computer.';
+  document.getElementById('open-settings').textContent = 'Allow local files';
+  document.getElementById('file-hint').textContent = 'Click it and accept the prompt. This page notices automatically.';
+}
+
+document.getElementById('open-settings').addEventListener('click', () => { requestFileAccess(); });
 
 fetch(chrome.runtime.getURL('examples/sample.md'))
   .then((r) => r.text())

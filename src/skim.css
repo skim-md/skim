@@ -1497,6 +1497,7 @@ html[data-skim-md="1"][data-theme="light"] .skim .hljs-params { color: #24292e; 
 .skim-review-actions { display: flex; align-items: center; gap: 0.9em; }
 .skim-review-rate {
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: 0.4em;
   padding: 0.4em 0.9em;
@@ -1518,6 +1519,14 @@ html[data-skim-md="1"][data-theme="light"] .skim .hljs-params { color: #24292e; 
   text-decoration: underline dotted;
 }
 .skim-review-later:hover { color: var(--skim-fg); }
+.skim-review-issue {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--skim-muted) !important;
+  font-size: 0.85em;
+  text-decoration: none !important;
+}
+.skim-review-issue:hover { color: var(--skim-fg) !important; text-decoration: underline !important; }
 .skim-review-close {
   position: absolute;
   top: 0.35rem;

@@ -188,7 +188,8 @@ html[data-skim-md="1"] body.skim-body {
 .skim ul, .skim ol { margin: 0 0 1em; padding-inline-start: 1.6em; }
 .skim li { margin: 0.25em 0; }
 .skim ul { list-style: none; padding-inline-start: 1.35em; }
-.skim ul > li::before {
+.skim ul > li::before,
+.skim ul > li.skim-li-para > p:first-child::before {
   content: "•";
   color: var(--skim-heading);
   font-size: 1.45em;
@@ -197,6 +198,13 @@ html[data-skim-md="1"] body.skim-body {
   margin-inline-start: -0.95em;
   margin-inline-end: 0.28em;
 }
+/* Items that open with a block (render.js tags them): in a loose list the
+   bullet moves into the first paragraph's first line; before a code block or
+   quote it leaves the flow, so it never sits alone on a line of its own. */
+.skim ul > li.skim-li-para::before { content: none; }
+.skim ul > li.skim-li-para > p:first-child:has(> input[type="checkbox"])::before { content: ""; }
+.skim ul > li.skim-li-block { position: relative; }
+.skim ul > li.skim-li-block::before { position: absolute; inset-inline-start: 0; top: 0; line-height: 1.2; }
 .skim li > ul, .skim li > ol { margin-top: 0.25em; }
 /* Task lists */
 .skim li.task-list-item, .skim li:has(> input[type="checkbox"]) { list-style: none; }

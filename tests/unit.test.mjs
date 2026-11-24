@@ -2250,3 +2250,18 @@ test('store links follow the browser: AMO on Firefox, Chrome Web Store elsewhere
     globalThis.chrome = prev;
   }
 });
+
+// --- list bullets -------------------------------------------------------
+test('list items that open with a block are tagged so the bullet is not stranded', () => {
+  // Tight items open with inline text: no class, the inline ::before bullet works.
+  assert.match(renderMarkdown('* Item1\n  * Sub1\n  * Sub2\n'), /<li>Item1<ul>/);
+  assert.doesNotMatch(renderMarkdown('* Item\n  ```\n  x\n  ```\n'), /skim-li-/);
+  assert.doesNotMatch(renderMarkdown('- [ ] todo\n- [x] done\n'), /skim-li-/);
+  // A blank line before the sub-list makes the list loose: the text is wrapped in <p>.
+  const loose = renderMarkdown('* Item1\n\n  * Sub1\n  * Sub2\n');
+  assert.match(loose, /<li class="skim-li-para"><p>Item1<\/p>/);
+  assert.match(loose, /<li>Sub1<\/li>/);
+  // Items that open with a code block or a quote.
+  assert.match(renderMarkdown('* ```\n  x\n  ```\n'), /<li class="skim-li-block"><pre/);
+  assert.match(renderMarkdown('* > quote\n'), /<li class="skim-li-block"><blockquote/);
+});
